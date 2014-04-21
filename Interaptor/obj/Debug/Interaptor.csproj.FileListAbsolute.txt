@@ -1,0 +1,6 @@
+E:\cs\proj\Interaptor\Interaptor\bin\Debug\Interaptor.exe.config
+E:\cs\proj\Interaptor\Interaptor\bin\Debug\Interaptor.exe
+E:\cs\proj\Interaptor\Interaptor\bin\Debug\Interaptor.pdb
+E:\cs\proj\Interaptor\Interaptor\obj\Debug\Interaptor.csprojResolveAssemblyReference.cache
+E:\cs\proj\Interaptor\Interaptor\obj\Debug\Interaptor.exe
+E:\cs\proj\Interaptor\Interaptor\obj\Debug\Interaptor.pdb
