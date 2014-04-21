@@ -11,7 +11,7 @@ namespace Interaptor {
             this.lexema = lexema;
         }
 
-        public enum Type { 
+        public enum Type {
             IdHEad,
             IdTail,
             FunctionCall,

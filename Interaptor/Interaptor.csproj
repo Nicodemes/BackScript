@@ -63,6 +63,7 @@
     <Compile Include="Id.cs" />
     <Compile Include="SymbolTable.cs" />
     <Compile Include="Token.cs" />
+    <Compile Include="Tokenizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

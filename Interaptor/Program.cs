@@ -8,24 +8,19 @@ namespace Interaptor {
     class Program {
         
         static void Main(string[] args) {
-            SymbolTable tbl = new SymbolTable(null);
-            tbl.AddVariable("WhatToSayFirst", "Hello ");
             
-            ReservedFunction foo = new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(HelloWorld));
+            string toParse = "1 2";
 
+            Console.Write("\n");
 
-            List<string> parameters = new List<string>();
-            parameters.Add("WhatToSayNext");
-            tbl.AddFunction("fun1", parameters , foo);
-
-            List<object> toPass = new List<object>();
-            toPass.Add("World!");
-            Console.Write(tbl.CallFunction("fun1",toPass));
+            foreach (Token item in Tokenizer.Tokenize(toParse, 0, toParse.Length)) {
+                Console.WriteLine("[" + item.type + "] " + item.lexema);
+            }
             
             Console.ReadLine();
         }
         static object HelloWorld(SymbolTable s) {
-            Console.Write(s.GetVariable("WhatToSayFirst"));
+            Console.WriteLine(s.GetVariable("WhatToSayFirst"));
             return "World!";
         }
     }

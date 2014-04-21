@@ -17,6 +17,7 @@ namespace Interaptor {
             switch (t.type) {
                 
                 case Token.Type.Operator:
+                    ProcessOperator(t.lexema);
                     break;
                 
                 case Token.Type.FunctionCall:
@@ -48,6 +49,7 @@ namespace Interaptor {
                 case Token.Type.IdHEad:
                     pStack.Push(new Id(t.lexema));
                     break;
+
                 case Token.Type.IdTail:
                     Id before = (Id)pStack.Peek();
                     before.AddPath(t.lexema);
@@ -58,6 +60,14 @@ namespace Interaptor {
                     break;
             }
         }
+        public void Process(LinkedList<Token> input){
+            LinkedListNode<Token> cur = input.First;
+            while (cur != null) {
+                this.Process(cur.Value);
+                cur = cur.Next;
+            }
+        }
+        
         private void ProcessOperator(string op) {
             
             switch (op) { 
