@@ -17,11 +17,24 @@ namespace Interaptor {
         }
 
         public void AddVariable(string name, object value) {
-            _symbols.Add(name, value);
+           
+                _symbols.Add(name, value);
+            
         }
-        public void AddFunction(string name, List<string> parameters, IExecutable exe) {
+        public void AddFunction(string name, IExecutable exe, List<string> parameters) {
             _symbols.Add(name, new FunctionBLock(this, parameters, exe));
         }
+        public void AddFunction(string name,  IExecutable exe, params string[] parameters) {
+            List<string> pr;
+            
+            pr = new List<string>();
+            foreach (string i in parameters)
+                pr.Add(i);
+
+            _symbols.Add(name, new FunctionBLock(this, pr, exe));
+        }
+        
+     
         //calls a function with a spechific id
         
         public object CallFunction(Id id, List<object> variables) {
@@ -47,6 +60,32 @@ namespace Interaptor {
                 if (Father == null)
                     throw new Exception("Variable \""+id+"\" is undefined");
                 return this.Father.GetVariable(id);
+            }
+        }
+        public object GetValue(Id id) {
+            object toGet = GetVariable(id);
+            while (toGet is Id)
+                toGet = GetVariable(toGet as Id);
+            return toGet;
+        }
+        
+        public object SetVariable(Id id, object value) {
+             try {
+                 if (id.Length > 1) {
+                     SymbolTable scope = (SymbolTable)this.GetVariable(new Id(id.Head));
+                     id.Path.RemoveFirst();
+                     return scope.SetVariable(id, value);
+                 }
+                 
+                _symbols[id.Head] = value;
+                return value;
+                 
+            }
+            catch {
+                 if (Father == null)
+                     throw new Exception("Variable \"" + id + "\" is undefined");
+                 return this.Father.SetVariable(id, value);
+
             }
         }
         

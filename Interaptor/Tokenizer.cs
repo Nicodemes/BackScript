@@ -13,15 +13,51 @@ namespace Interaptor {
 
             while (start < end) {
                 switch(input[start]){
+                    //escape charecter
+                    case '\\':
+                        if (carryType != Token.Type.String)
+                            throw new Exception("escape char outside of a string defention");
+                        start++;
+                        if (start >= end)
+                            throw new Exception("end of string toosoon");
+
+                        switch(input[start]){
+                            case 'n':
+                                carry += '\n';
+                                break;
+                            case 't':
+                                carryType += '\t';
+                                break;
+                            case '\"':
+                                carryType += '\"';
+                                break;
+                            case '\'':
+                                carryType += '\'';
+                                break;
+                            default:
+                                throw new Exception("unrecognized charecter after escape charecter");
+                                
+
+                        }
+                        break;
                     case '\n':
                         //igonre
                         break;
                     
                     case ' ':
+                        
                         if (carryType != Token.Type.String) {
-                            output.AddLast(new Token(carry, carryType));
-                            carry = "";
-                            carryType = Token.Type.EOS;
+                            if (carryType == Token.Type.FunctionCall && ((carry == "") || (carry == "<"))) {
+                                //ignore uneeded spaces
+                            }
+                            else {
+                                if (carryType != Token.Type.EOS) {
+
+                                    output.AddLast(new Token(carry, carryType));
+                                    carry = "";
+                                    carryType = Token.Type.EOS;
+                                }
+                            }
                         }
                         else
                             carry += ' ';
@@ -113,10 +149,16 @@ namespace Interaptor {
                     
                     
                     case '<':
-                        if(carryType != Token.Type.EOS)
-                            throw new Exception("invalid placement");
-                        carryType=Token.Type.FunctionCall;
-                        carry="<";
+                        if (carryType != Token.Type.EOS) {
+                            if (carryType == Token.Type.String)
+                                carry += "<";
+                            else
+                                throw new Exception("invalid placement");
+                        }
+                        else {
+                            carryType = Token.Type.FunctionCall;
+                            carry = "<";
+                        }
                         break;
                     case '-':
                         if(carryType==Token.Type.EOS)
@@ -129,7 +171,18 @@ namespace Interaptor {
                         else
                             throw new Exception("invalid placement");
                         break;
-                    
+                    case '{':
+                        if (carryType == Token.Type.EOS)
+                            output.AddLast(new Token("{", Token.Type.Operator));
+                        else
+                            throw new Exception("invalid placement");
+                        break;
+                    case '}':
+                        if (carryType == Token.Type.EOS)
+                            output.AddLast(new Token("}", Token.Type.Operator));
+                        else
+                            throw new Exception("invalid placement");
+                        break;
                     case '+':
                         if(carryType==Token.Type.EOS)
                             output.AddLast(new Token("+", Token.Type.Operator));
@@ -143,14 +196,17 @@ namespace Interaptor {
                             throw new Exception("invalid placement");
                         break;
                     case ';':
+                        
                         if (carryType == Token.Type.String)
                             carry += ';';
-                        else if (carryType == Token.Type.EOS)
-                            output.AddLast(new Token(";", Token.Type.Operator));
-                        else
-                            throw new Exception("invalid placement");
+                        else if (carryType != Token.Type.EOS) {
+                            output.AddLast(new Token(carry, carryType));
+                            carry = "";
+                            carryType = Token.Type.EOS;
+                        }
+                        output.AddLast(new Token(";", Token.Type.Operator));
                         break;
-
+                    
 
                     default:
                         if (carryType == Token.Type.EOS)

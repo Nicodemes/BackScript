@@ -11,7 +11,7 @@ namespace Interaptor {
         SymbolTable activeScope;
         public Stack<object> ProcessStack { get { return pStack; } }
 
-        public SymbolTable ActiveScope{get{return activeScope;}}
+        public SymbolTable ActiveScope { get { return activeScope; } set { this.activeScope = value; } }
 
         public Interaptor() {
             pStack = new Stack<object>();
@@ -66,7 +66,7 @@ namespace Interaptor {
             try {
                 switch (op) {
                     case "+":
-                        CallFunction(new Id("add"));
+                        CallFunction(new Id("Add"));
                         break;
                     case "-":
                         pStack.Push(-(double)pStack.Pop() + (double)pStack.Pop());
@@ -78,13 +78,17 @@ namespace Interaptor {
                     case ";":
                         pStack = new Stack<object>();
                         break;
+                    case "=":
+                        CallFunction(new Id("Be"));
+                        break;
                     case "{":
-                        this.activeScope = this.activeScope.AddNewAnonymicScope();
+                        this.EnterScope(activeScope.AddNewAnonymicScope());
                         break;
                     case "}":
-                        this.activeScope = this.activeScope.Father;
-                        if (activeScope == null)
-                            throw new Exception(" you are trying to scope out of the last scoup");
+                        this.ScopeOut();
+                        break;
+                    default: 
+                        throw new Exception("invalid Operator");
                         break;
                 }
             }
@@ -92,6 +96,19 @@ namespace Interaptor {
                 throw new Exception("Noth enoth openders to continue the operation");
             }
         }
+
+        public void EnterScope(SymbolTable t) {
+         
+            this.activeScope = t;
+        }
+        public void ScopeOut() {
+           
+            this.activeScope = this.activeScope.Father;
+            if (activeScope == null)
+                throw new Exception(" you are trying to scope out of the last scoup");
+        }
+
+
         public void CallFunction(Id name) {
             //the id of the function is t.lexema
 
