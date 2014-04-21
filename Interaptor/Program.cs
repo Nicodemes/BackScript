@@ -9,20 +9,23 @@ namespace Interaptor {
         
         static void Main(string[] args) {
             SymbolTable tbl = new SymbolTable(null);
-            tbl.AddVariable("A", "Hello ");
+            tbl.AddVariable("WhatToSayFirst", "Hello ");
             
             ReservedFunction foo = new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(HelloWorld));
-            
 
 
-            tbl.AddFunction("fun1", new List<string>(0) , foo);
-            
-            Console.Write(tbl.CallFunction("fun1",new List<object>(0)));
+            List<string> parameters = new List<string>();
+            parameters.Add("WhatToSayNext");
+            tbl.AddFunction("fun1", parameters , foo);
+
+            List<object> toPass = new List<object>();
+            toPass.Add("World!");
+            Console.Write(tbl.CallFunction("fun1",toPass));
             
             Console.ReadLine();
         }
         static object HelloWorld(SymbolTable s) {
-            Console.Write(s.GetVariable("A"));
+            Console.Write(s.GetVariable("WhatToSayFirst"));
             return "World!";
         }
     }

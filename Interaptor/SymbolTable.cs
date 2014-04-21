@@ -40,7 +40,7 @@ namespace Interaptor {
             }
             catch {
                 if (Father == null)
-                    throw new Exception("Variable is undefined");
+                    throw new Exception("Variable \""+name+"\" is undefined");
                 return this.Father.GetVariable(name);
             }
         }
