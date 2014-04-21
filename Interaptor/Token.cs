@@ -12,7 +12,12 @@ namespace Interaptor {
         }
 
         public enum Type { 
-            
+            Id,
+            FunctionCall,
+            Integer,
+            String,
+            Double,
+            Operator,
         }
     }
 }

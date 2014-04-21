@@ -25,15 +25,14 @@ namespace Interaptor {
         //calls a function with a spechific name
         
         public object CallFunction(string name, List<object> variables) {
-            FunctionBLock blc;
-            try {
-                 blc= (FunctionBLock)_symbols[name];
-            }
-            catch {
-                throw new Exception("intrapretation error: no function wit the name" + name + " found in the sybol table");
-            }
+            FunctionBLock blc = (FunctionBLock)this.GetVariable(name);
             return blc.Operation.ExecuteWithTable(blc.GetCallSymbolTable(variables));
         }
+        public int GetFunctionParametersCount(string name) {
+            FunctionBLock blc = (FunctionBLock)this.GetVariable(name);
+            return blc.ParametersCount;
+        }
+        
         public object GetVariable(string name) {
             try {
                 return _symbols[name];
@@ -55,6 +54,8 @@ namespace Interaptor {
             SymbolTable Father { get; set; }
             
             List<string> parameters;
+            public int ParametersCount { get { return this.parameters.Count; } }
+
             public IExecutable Operation { get; set; }
 
 
