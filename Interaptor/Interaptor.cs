@@ -12,6 +12,7 @@ namespace Interaptor {
         public Interaptor() {
             pStack = new Stack<object>();
         }
+        
         public void Process(Token t) {
             switch (t.type) {
                 
@@ -34,10 +35,44 @@ namespace Interaptor {
                     pStack.Push(this.activeScope.CallFunction(t.lexema, parameters));
 
                     break;
+                case Token.Type.String:
+                    pStack.Push(t.lexema);
+                    break;
+                case Token.Type.Double:
+                    pStack.Push(Double.Parse(t.lexema));
+                    break;
+                case Token.Type.Integer:
+                    pStack.Push(int.Parse(t.lexema));
+                    break;
+                
+                case Token.Type.IdHEad:
+                    pStack.Push(new Id(t.lexema));
+                    break;
+                case Token.Type.IdTail:
+                    Id before = (Id)pStack.Peek();
+                    before.AddPath(t.lexema);
+                    break;
+                case Token.Type.EOS:
+                    foreach (object obj in pStack)
+                        Console.WriteLine(obj.ToString());
+                    break;
             }
         }
-        public void ProcessOperator(string op) { 
+        private void ProcessOperator(string op) {
             
+            switch (op) { 
+                case "+":
+                    pStack.Push((double)pStack.Pop() + (double)pStack.Pop());
+                    break;
+                case "-":
+                    pStack.Push(-(double)pStack.Pop() + (double)pStack.Pop());
+                    break;
+
+                case "*":
+                    pStack.Push((double)pStack.Pop() * (double)pStack.Pop());
+                    break;
+            }
         }
+        
     }
 }
