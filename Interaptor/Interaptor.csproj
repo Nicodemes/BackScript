@@ -64,6 +64,7 @@
     <Compile Include="SymbolTable.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="Tokenizer.cs" />
+    <Compile Include="Void.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

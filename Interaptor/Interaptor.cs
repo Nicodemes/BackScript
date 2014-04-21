@@ -6,11 +6,16 @@ using System.Threading.Tasks;
 
 namespace Interaptor {
     class Interaptor {
+       
         Stack<object> pStack;
         SymbolTable activeScope;
+        public Stack<object> ProcessStack { get { return pStack; } }
+
+        public SymbolTable ActiveScope{get{return activeScope;}}
 
         public Interaptor() {
             pStack = new Stack<object>();
+            activeScope = new SymbolTable(null);
         }
         
         public void Process(Token t) {
@@ -33,7 +38,9 @@ namespace Interaptor {
                         parameters.Add(pStack.Pop());
 
                     //push to the top of the stack the result
-                    pStack.Push(this.activeScope.CallFunction(t.lexema, parameters));
+                    object returned = this.activeScope.CallFunction(t.lexema, parameters);
+                    if(!(returned is Void))
+                        pStack.Push(returned);
 
                     break;
                 case Token.Type.String:
@@ -43,7 +50,7 @@ namespace Interaptor {
                     pStack.Push(Double.Parse(t.lexema));
                     break;
                 case Token.Type.Integer:
-                    pStack.Push(int.Parse(t.lexema));
+                    pStack.Push(Double.Parse(t.lexema));
                     break;
                 
                 case Token.Type.IdHEad:
@@ -56,7 +63,8 @@ namespace Interaptor {
                     break;
                 case Token.Type.EOS:
                     foreach (object obj in pStack)
-                        Console.WriteLine(obj.ToString());
+                        Console.WriteLine("  >"+obj.ToString());
+                    
                     break;
             }
         }
@@ -80,6 +88,9 @@ namespace Interaptor {
 
                 case "*":
                     pStack.Push((double)pStack.Pop() * (double)pStack.Pop());
+                    break;
+                case ";":
+                    pStack = new Stack<object>();
                     break;
             }
         }

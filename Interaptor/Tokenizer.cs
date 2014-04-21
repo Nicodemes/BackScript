@@ -13,6 +13,10 @@ namespace Interaptor {
 
             while (start < end) {
                 switch(input[start]){
+                    case '\n':
+                        //igonre
+                        break;
+                    
                     case ' ':
                         output.AddLast(new Token(carry, carryType));
                         carry="";
@@ -116,13 +120,25 @@ namespace Interaptor {
                         break;
                     case '*':
                         if(carryType==Token.Type.EOS)
-                            output.AddLast(new Token("/", Token.Type.Operator));
+                            output.AddLast(new Token("*", Token.Type.Operator));
+                        else
+                            throw new Exception("invalid placement");
+                        break;
+                    case ';':
+                        if (carryType == Token.Type.EOS)
+                            output.AddLast(new Token(";", Token.Type.Operator));
                         else
                             throw new Exception("invalid placement");
                         break;
 
 
                     default:
+                        if (carryType == Token.Type.EOS)
+                            carryType = Token.Type.IdHEad;
+                        if (carryType == Token.Type.FunctionCall && carry == "<") {
+                            carry = "";
+                            
+                        }
                         carry+=input[start];
                         break;
                 }
