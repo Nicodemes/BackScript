@@ -22,34 +22,49 @@ namespace Interaptor {
         public void AddFunction(string name, List<string> parameters, IExecutable exe) {
             _symbols.Add(name, new FunctionBLock(this, parameters, exe));
         }
-        //calls a function with a spechific name
+        //calls a function with a spechific id
         
-        public object CallFunction(string name, List<object> variables) {
-            FunctionBLock blc = (FunctionBLock)this.GetVariable(name);
+        public object CallFunction(Id id, List<object> variables) {
+            FunctionBLock blc = (FunctionBLock)this.GetVariable(id);
             return blc.Operation.ExecuteWithTable(blc.GetCallSymbolTable(variables));
         }
-        public int GetFunctionParametersCount(string name) {
-            FunctionBLock blc = (FunctionBLock)this.GetVariable(name);
+        public int GetFunctionParametersCount(Id id) {
+            FunctionBLock blc = (FunctionBLock)this.GetVariable(id);
             return blc.ParametersCount;
         }
         
-        public object GetVariable(string name) {
+        public object GetVariable(Id id) {
             try {
-                return _symbols[name];
+                //ncase the path of the id is llarger then 1 you need to search inside the kid symbo table
+                if (id.Length > 1) {
+                    SymbolTable scope = (SymbolTable) this.GetVariable(new Id(id.Head));
+                    id.Path.RemoveFirst();
+                    return scope.GetVariable(id);
+                }
+                return _symbols[id.Head];
             }
             catch {
                 if (Father == null)
-                    throw new Exception("Variable \""+name+"\" is undefined");
-                return this.Father.GetVariable(name);
+                    throw new Exception("Variable \""+id+"\" is undefined");
+                return this.Father.GetVariable(id);
             }
         }
         
             
-        public SymbolTable CreateNewScope(string name) {
+        public SymbolTable AddNewScope(string name) {
             _symbols.Add(name, new SymbolTable(this));
             return (SymbolTable)_symbols[name];
         }
-
+        /*anonymic scope is a scope without id
+           {
+         *  {
+         *    <-- anonyimic scope inside an anonyimic scope. 
+         *  }
+         * }
+         */
+        public SymbolTable AddNewAnonymicScope() {
+            return new SymbolTable(this);
+        }
         class FunctionBLock {
             SymbolTable Father { get; set; }
             
@@ -77,7 +92,6 @@ namespace Interaptor {
                 return fuTable;
             }
         }
-        
     }
 
 }

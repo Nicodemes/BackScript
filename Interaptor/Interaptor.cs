@@ -17,7 +17,11 @@ namespace Interaptor {
             pStack = new Stack<object>();
             activeScope = new SymbolTable(null);
         }
-        
+
+        public void Reset() {
+            pStack = new Stack<object>();
+        }
+
         public void Process(Token t) {
             switch (t.type) {
                 
@@ -26,22 +30,7 @@ namespace Interaptor {
                     break;
                 
                 case Token.Type.FunctionCall:
-                    //the name of the function is t.lexema
-
-                    //get the number of aprands that this function resiave
-                    int limit=this.activeScope.GetFunctionParametersCount(t.lexema);
-
-                    //the parameters that will be passed to the function call
-                    List<object> parameters = new List<object>();
-
-                    for (int i = 0; i < limit; i++)
-                        parameters.Add(pStack.Pop());
-
-                    //push to the top of the stack the result
-                    object returned = this.activeScope.CallFunction(t.lexema, parameters);
-                    if(!(returned is Void))
-                        pStack.Push(returned);
-
+                    CallFunction(new Id(t.lexema));
                     break;
                 case Token.Type.String:
                     pStack.Push(t.lexema);
@@ -62,9 +51,6 @@ namespace Interaptor {
                     before.AddPath(t.lexema);
                     break;
                 case Token.Type.EOS:
-                    foreach (object obj in pStack)
-                        Console.WriteLine("  >"+obj.ToString());
-                    
                     break;
             }
         }
@@ -75,25 +61,54 @@ namespace Interaptor {
                 cur = cur.Next;
             }
         }
-        
+       
         private void ProcessOperator(string op) {
-            
-            switch (op) { 
-                case "+":
-                    pStack.Push((double)pStack.Pop() + (double)pStack.Pop());
-                    break;
-                case "-":
-                    pStack.Push(-(double)pStack.Pop() + (double)pStack.Pop());
-                    break;
+            try {
+                switch (op) {
+                    case "+":
+                        CallFunction(new Id("add"));
+                        break;
+                    case "-":
+                        pStack.Push(-(double)pStack.Pop() + (double)pStack.Pop());
+                        break;
 
-                case "*":
-                    pStack.Push((double)pStack.Pop() * (double)pStack.Pop());
-                    break;
-                case ";":
-                    pStack = new Stack<object>();
-                    break;
+                    case "*":
+                        pStack.Push((double)pStack.Pop() * (double)pStack.Pop());
+                        break;
+                    case ";":
+                        pStack = new Stack<object>();
+                        break;
+                    case "{":
+                        this.activeScope = this.activeScope.AddNewAnonymicScope();
+                        break;
+                    case "}":
+                        this.activeScope = this.activeScope.Father;
+                        if (activeScope == null)
+                            throw new Exception(" you are trying to scope out of the last scoup");
+                        break;
+                }
+            }
+            catch (InvalidOperationException e) {
+                throw new Exception("Noth enoth openders to continue the operation");
             }
         }
-        
+        public void CallFunction(Id name) {
+            //the id of the function is t.lexema
+
+            //get the number of aprands that this function resiave
+            int limit = this.activeScope.GetFunctionParametersCount(name);
+
+            //the parameters that will be passed to the function call
+            List<object> parameters = new List<object>();
+
+            for (int i = 0; i < limit; i++)
+                parameters.Add(pStack.Pop());
+
+            //push to the top of the stack the result
+            object returned = this.activeScope.CallFunction(name, parameters);
+            if (!(returned is Void))
+                pStack.Push(returned);
+
+        }
     }
 }

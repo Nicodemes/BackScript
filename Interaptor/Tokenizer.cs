@@ -18,12 +18,30 @@ namespace Interaptor {
                         break;
                     
                     case ' ':
-                        output.AddLast(new Token(carry, carryType));
-                        carry="";
-                        carryType=Token.Type.EOS;
+                        if (carryType != Token.Type.String) {
+                            output.AddLast(new Token(carry, carryType));
+                            carry = "";
+                            carryType = Token.Type.EOS;
+                        }
+                        else
+                            carry += ' ';
+                        break;
+                    case '\"':
+                        if (carryType == Token.Type.String) {
+                            output.AddLast(new Token(carry, carryType));
+                            carryType = Token.Type.EOS;
+                        }
+                        else if (carryType == Token.Type.EOS) {
+                            carryType = Token.Type.String;
+                        }
+                        else
+                            throw new Exception("invalid operator placement");
                         break;
                     case '.':
                         switch(carryType){
+                            case Token.Type.String:
+                                carry += '.';
+                                break;
                             case Token.Type.Integer:
                                 carryType=Token.Type.Double;
                                 carry+='.';
@@ -125,7 +143,9 @@ namespace Interaptor {
                             throw new Exception("invalid placement");
                         break;
                     case ';':
-                        if (carryType == Token.Type.EOS)
+                        if (carryType == Token.Type.String)
+                            carry += ';';
+                        else if (carryType == Token.Type.EOS)
                             output.AddLast(new Token(";", Token.Type.Operator));
                         else
                             throw new Exception("invalid placement");
