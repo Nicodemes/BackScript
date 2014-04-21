@@ -20,6 +20,7 @@ namespace Interaptor {
             Double,
             Operator,
             EOS,
+            Indaxer,
         }
     }
 }

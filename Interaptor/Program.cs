@@ -13,7 +13,8 @@ namespace Interaptor {
             
            
             raptor = new Interaptor();
-
+            raptor.ActiveScope.AddFunction("~indaxer", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Indexer_Fu)), "index", "enums");
+            raptor.ActiveScope.AddFunction("list", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(List_Fu)), "items");
             raptor.ActiveScope.AddFunction("Set", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Be_Fu)), "value", "id");
             raptor.ActiveScope.AddFunction("Def", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Def_Fu)), "value", "id");
             raptor.ActiveScope.AddFunction("Add",new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Add_Fu)),"a","b");
@@ -36,13 +37,14 @@ namespace Interaptor {
                 try {
                     try {
                         tokens = Tokenizer.Tokenize(row, 0, row.Length);
+                        //foreach (Token item in tokens) 
+                         //   Console.WriteLine("[" + item.type + "] " + item.lexema);
+                        
                     }
                     catch (Exception e) {
                         throw new Exception("Syntax Error: " + e.Message);
-                    }/*
-                foreach (Token item in tokens) {
-                    Console.WriteLine("[" + item.type + "] " + item.lexema);
-                }*/
+                    }
+                   
                     try {
                         raptor.Process(tokens);
                     }
@@ -153,6 +155,31 @@ namespace Interaptor {
             }
             raptor.ScopeOut();
             return new Void();
+        }
+        static object List_Fu(SymbolTable s) {
+            Opcodes p = s.GetValue(new Id("items")) as Opcodes;
+            List<object> toReturn= new List<object>();
+            foreach( object  a in p.ops){
+                switch ((a as Token).type) {
+                  
+                    case Token.Type.String:
+                        toReturn.Add((a as Token).lexema);
+                        break;
+                    case Token.Type.Double:
+                        toReturn.Add(Double.Parse((a as Token).lexema));
+                        break;
+                    case Token.Type.Integer:
+                        toReturn.Add(Double.Parse((a as Token).lexema));
+                        break;
+                }
+            }
+            return toReturn;            
+        }
+
+        static object Indexer_Fu(SymbolTable s) {
+            int p = (int)s.GetValue(new Id("index"));
+            IEnumerable<object> ls =( IEnumerable<object>) s.GetValue(new Id("enums"));
+            return ls.ElementAt<object>(p);
         }
     }
 }

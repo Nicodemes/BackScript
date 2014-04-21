@@ -12,7 +12,9 @@ namespace Interaptor {
         public Stack<object> ProcessStack { get { return pStack; } }
 
         public SymbolTable ActiveScope { get { return activeScope; } set { this.activeScope = value; } }
-
+        public bool statCode = false;
+        public Opcodes tempRepo;
+        
         public Interaptor() {
             pStack = new Stack<object>();
             activeScope = new SymbolTable(null);
@@ -21,38 +23,50 @@ namespace Interaptor {
         public void Reset() {
             pStack = new Stack<object>();
         }
-
+        
         public void Process(Token t) {
-            switch (t.type) {
-                
-                case Token.Type.Operator:
-                    ProcessOperator(t.lexema);
-                    break;
-                
-                case Token.Type.FunctionCall:
-                    CallFunction(new Id(t.lexema));
-                    break;
-                case Token.Type.String:
-                    pStack.Push(t.lexema);
-                    break;
-                case Token.Type.Double:
-                    pStack.Push(Double.Parse(t.lexema));
-                    break;
-                case Token.Type.Integer:
-                    pStack.Push(Double.Parse(t.lexema));
-                    break;
-                
-                case Token.Type.IdHEad:
-                    pStack.Push(new Id(t.lexema));
-                    break;
-
-                case Token.Type.IdTail:
-                    Id before = (Id)pStack.Peek();
-                    before.AddPath(t.lexema);
-                    break;
-                case Token.Type.EOS:
-                    break;
+            if (statCode) {
+                if (t.type == Token.Type.Operator && t.lexema == "}") {
+                    statCode = false;
+                    pStack.Push(tempRepo);
+                    return;
+                }
+                tempRepo.ops.AddLast(t);
             }
+            else
+                switch (t.type) {
+                    case Token.Type.Indaxer:
+                        pStack.Push(int.Parse(t.lexema));
+                        CallFunction(new Id("~indaxer"));
+                        break;
+                    case Token.Type.Operator:
+                        ProcessOperator(t.lexema);
+                        break;
+                
+                    case Token.Type.FunctionCall:
+                        CallFunction(new Id(t.lexema));
+                        break;
+                    case Token.Type.String:
+                        pStack.Push(t.lexema);
+                        break;
+                    case Token.Type.Double:
+                        pStack.Push(Double.Parse(t.lexema));
+                        break;
+                    case Token.Type.Integer:
+                        pStack.Push(Double.Parse(t.lexema));
+                        break;
+                
+                    case Token.Type.IdHEad:
+                        pStack.Push(new Id(t.lexema));
+                        break;
+
+                    case Token.Type.IdTail:
+                        Id before = (Id)pStack.Peek();
+                        before.AddPath(t.lexema);
+                        break;
+                    case Token.Type.EOS:
+                        break;
+                }
         }
         public void Process(LinkedList<Token> input){
             LinkedListNode<Token> cur = input.First;
@@ -82,11 +96,10 @@ namespace Interaptor {
                         CallFunction(new Id("Be"));
                         break;
                     case "{":
-                        this.EnterScope(activeScope.AddNewAnonymicScope());
+                        this.statCode = true;
+                        this.tempRepo = new Opcodes(this);
                         break;
-                    case "}":
-                        this.ScopeOut();
-                        break;
+                  
                     default: 
                         throw new Exception("invalid Operator");
                         break;

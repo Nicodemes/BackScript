@@ -7,8 +7,14 @@ namespace Interaptor {
         object ExecuteWithTable(SymbolTable tble);
     }
     class Opcodes : IExecutable {
-        static Interaptor machine;
-        List<Token> ops;
+        Interaptor machine;
+        public LinkedList<Token> ops;
+
+        public Opcodes(Interaptor machine) {
+            ops = new LinkedList<Token>();
+            this.machine = machine;
+        }
+
         public object ExecuteWithTable(SymbolTable tble) {
             return null;
         }
