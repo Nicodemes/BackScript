@@ -12,8 +12,9 @@ namespace Interaptor {
         }
 
         public enum Type {
-            IdHEad,
+            IdHead,
             IdTail,
+            IdEnd,
             FunctionCall,
             Integer,
             String,

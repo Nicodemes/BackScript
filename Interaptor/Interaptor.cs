@@ -16,6 +16,8 @@ namespace Interaptor {
         public SymbolTable ActiveScope { get { return activeScope; } set { this.activeScope = value; } }
         public bool statCode = false;
         public Opcodes tempRepo;
+
+        public bool exptFuCall = false;
         
         public Interaptor() {
             pStack = new Stack<object>();
@@ -58,7 +60,7 @@ namespace Interaptor {
                         pStack.Push(Double.Parse(t.lexema));
                         break;
                 
-                    case Token.Type.IdHEad:
+                    case Token.Type.IdHead:
                         pStack.Push(new Id(t.lexema));
                         break;
 
@@ -101,7 +103,8 @@ namespace Interaptor {
                         this.statCode = true;
                         this.tempRepo = new Opcodes(this);
                         break;
-                  
+                    case "<-":
+
                     default: 
                         throw new Exception("invalid Operator");
                         break;

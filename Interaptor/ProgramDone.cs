@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Interaptor {
-    class Program {
+    class ProgramDone {
         static Interaptor raptor;
 
         static void Main(string[] args) {
