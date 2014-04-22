@@ -7,44 +7,78 @@ using System.Threading.Tasks;
 namespace Interaptor {
     class Program {
         static Interaptor raptor;
-       
-        static void Main(string[] args) {
 
+        static void Main(string[] args) {
             
-           
+
+
             raptor = new Interaptor();
+            
             raptor.ActiveScope.AddFunction("~indaxer", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Indexer_Fu)), "index", "enums");
             raptor.ActiveScope.AddFunction("list", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(List_Fu)), "items");
             raptor.ActiveScope.AddFunction("Set", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Be_Fu)), "value", "id");
             raptor.ActiveScope.AddFunction("Def", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Def_Fu)), "value", "id");
-            raptor.ActiveScope.AddFunction("Add",new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Add_Fu)),"a","b");
-            raptor.ActiveScope.AddFunction("Clear",new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Clear_Fu)));
-            raptor.ActiveScope.AddFunction("Pop",new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Pop_Fu)));
-            raptor.ActiveScope.AddFunction("Print", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Print_Fu)),"value");
+            raptor.ActiveScope.AddFunction("Add", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Add_Fu)), "a", "b");
+            raptor.ActiveScope.AddFunction("Clear", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Clear_Fu)));
+            raptor.ActiveScope.AddFunction("Pop", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Pop_Fu)));
+            raptor.ActiveScope.AddFunction("Print", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Print_Fu)), "value");
             raptor.ActiveScope.AddFunction("PrintL", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(PrintL_Fu)), "value");
             raptor.ActiveScope.AddFunction("ReadFile", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ReadFile_Fu)), "path");
             raptor.ActiveScope.AddFunction("Eval", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Eval_Fu)), "string");
+            raptor.ActiveScope.AddFunction("ReadLine", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ReadLine_Fu)));
             
-            while (true) {
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.Write("backScript");
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("$ ");
-                Console.ForegroundColor = ConsoleColor.White;
-                string row = Console.ReadLine();
+            if (args.Length == 0) {
+                while (true) {
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.Write("backScript");
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write("$ ");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    string row = Console.ReadLine();
 
+                    LinkedList<Token> tokens = null;
+                    try {
+                        try {
+                            tokens = Tokenizer.Tokenize(row, 0, row.Length);
+                            //foreach (Token item in tokens) 
+                            //   Console.WriteLine("[" + item.type + "] " + item.lexema);
+
+                        }
+                        catch (Exception e) {
+                            throw new Exception("Syntax Error: " + e.Message);
+                        }
+
+                        try {
+                            raptor.Process(tokens);
+                        }
+                        catch (Exception e) {
+                            throw new Exception("Interpritation Error: " + e.Message);
+
+                        }
+                    }
+                    catch (Exception e) {
+                        Console.WriteLine("  " + e.Message);
+                        raptor.Reset();
+                    }
+
+                }
+            }
+            else {
+                System.IO.StreamReader myFile = new System.IO.StreamReader(args[0]);
+                string myString = myFile.ReadToEnd();
+                myFile.Close();
+                string row = myString;
                 LinkedList<Token> tokens = null;
                 try {
                     try {
                         tokens = Tokenizer.Tokenize(row, 0, row.Length);
-                        //foreach (Token item in tokens) 
-                         //   Console.WriteLine("[" + item.type + "] " + item.lexema);
-                        
                     }
                     catch (Exception e) {
                         throw new Exception("Syntax Error: " + e.Message);
-                    }
-                   
+                    }/*
+                    foreach (Token item in tokens) {
+                    Console.WriteLine("[" + item.type + "] " + item.lexema);
+                    }*/
                     try {
                         raptor.Process(tokens);
                     }
@@ -54,10 +88,9 @@ namespace Interaptor {
                     }
                 }
                 catch (Exception e) {
-                    Console.WriteLine("  "+e.Message);
+                    Console.WriteLine("  " + e.Message);
                     raptor.Reset();
                 }
-
             }
 
         }
@@ -111,7 +144,7 @@ namespace Interaptor {
         }
         //prints a variable to the screan
         static object Print_Fu(SymbolTable s) {
-            Console.Write(s.GetVariable(new Id("value")));
+            Console.Write(s.GetValue(new Id("value")));
             return new Void();
         }
         //Console.Writeine()
@@ -180,6 +213,9 @@ namespace Interaptor {
             int p = (int)s.GetValue(new Id("index"));
             IEnumerable<object> ls =( IEnumerable<object>) s.GetValue(new Id("enums"));
             return ls.ElementAt<object>(p);
+        }
+        static object ReadLine_Fu(SymbolTable s) {
+            return Console.ReadLine();
         }
     }
 }

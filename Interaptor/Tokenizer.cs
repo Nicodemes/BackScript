@@ -60,7 +60,20 @@ namespace Interaptor {
                         }
                         break;
                     case '\n':
-                        //igonre
+                         if (carryType != Token.Type.String) {
+                            if (carryType == Token.Type.FunctionCall && ((carry == "") || (carry == "<"))) {
+                                //ignore uneeded spaces
+                            }
+                            else {
+                                if (carryType != Token.Type.EOS) {
+
+                                    output.AddLast(new Token(carry, carryType));
+                                    carry = "";
+                                    carryType = Token.Type.EOS;
+                                }
+                            }
+                        }
+                        
                         break;
                     
                     case ' ':

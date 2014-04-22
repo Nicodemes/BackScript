@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace Interaptor {
     class Interaptor {
+
+
        
         Stack<object> pStack;
         SymbolTable activeScope;
