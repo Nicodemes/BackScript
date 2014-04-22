@@ -5,7 +5,192 @@ using System.Collections.Generic;
 namespace Interaptor {
     static class Tokenizer {
 
-        public static LinkedList<Token> Tokenize (string input,int start, int end){
+        string input;
+        LinkedList<Token> output;
+
+        int start;
+        int end;
+        
+        Token LookBack() {
+            return output.First;
+        }
+        char LookAhead() {
+            return input[start+1];
+        }
+        void Next() {
+            start++;
+        }
+
+
+        string carry;
+        Token.Type carryType;
+
+        void BreakCarry(){
+            BreakCarry(Token.Type.EOS);
+        }
+        void BreakCarry(Token.Type with) {
+
+            if (carryType == Token.Type.EOS)
+                return;
+            output.AddLast(new Token(carry, carryType));
+            carry = "";
+            carryType = with;
+        }
+
+        public Tokenizer(string input) {
+            this.output = new LinkedList<Token>();
+            this.input = input;
+            this.carry = "";
+        }
+        
+        public LinkedList<Token> Tokenize() {
+            while (start < end) {
+                
+                char cur = input[start]; ;
+                
+                //number literals
+                if (cur == '0' ||
+                    cur == '1' ||
+                    cur == '2' ||
+                    cur == '3' ||
+                    cur == '4' ||
+                    cur == '5' ||
+                    cur == '6' ||
+                    cur == '7' || 
+                    cur == '8' ||
+                    cur == '9') {
+                    //if there is no carry - that means that this is an integer 
+                    if (carryType == Token.Type.EOS)
+                        carryType = Token.Type.Integer;
+                    else
+                        carry += cur;
+                }
+                
+                switch (cur) {
+                    //saperators
+                    case ' ':
+                        BreakCarry();
+                        break;
+                    case ',':
+                        BreakCarry();
+                        break;
+                    case '\t':
+                        BreakCarry();
+                        break;
+                    case '\n':
+                        BreakCarry();
+                        break;
+                    //full stop saperator 
+                    case '.':
+                        //if the point is comming after idHead that is mean that you got idtail after this token
+                        if (carryType == Token.Type.IdHEad) 
+                            BreakCarry(Token.Type.IdTail);
+                        //if you are now carrying tail - that means that there is more tail after him
+                        if (carryType == Token.Type.IdTail)
+                            BreakCarry(Token.Type.IdTail);
+                        //it may be inside of an integer-then it converts to doublee.
+                        if (carryType == Token.Type.Integer) {
+                            carryType = Token.Type.Double;
+                            carry += '.';
+                        }
+                        else
+                            throw new Exception("You cannot place '.' after " + carryType.ToString()); 
+                       break;
+
+                    
+                    //operators
+                    case ';':
+                        BreakCarry();
+                        output.AddLast(new Token(";",Token.Type.Operator));
+                        break;
+                    case '+':
+                        BreakCarry();
+                        output.AddLast(new Token("+", Token.Type.Operator));
+                        break;
+                    case '-':
+                        BreakCarry();
+                        output.AddLast(new Token("-", Token.Type.Operator));
+                        break;
+                    case '*':
+                        BreakCarry();
+                        output.AddLast(new Token("*", Token.Type.Operator));
+                        break;
+                    case '/':
+                        BreakCarry();
+                        output.AddLast(new Token("/", Token.Type.Operator));
+                        break;
+                    case '{':
+                        BreakCarry();
+                        output.AddLast(new Token("{", Token.Type.Operator));
+                        break;
+                    case '}':
+                        BreakCarry();
+                        output.AddLast(new Token("}", Token.Type.Operator));
+                        break;
+                    
+                    //indexer
+                    case '[':
+                        Next();
+                        BreakCarry(Token.Type.Indaxer);
+                        while (input[start] != ']') {
+                            carry += input[start];
+                            Next();
+                        }
+                        BreakCarry();
+                        break;
+
+                    //string literals
+                    case '\"':
+                        Next();
+                        BreakCarry(Token.Type.String);
+                        while (input[start] != '\"') {
+                            carry += input[start];
+                            Next();
+                        }
+
+                        BreakCarry();
+                        break;
+                    //escape charecters
+                    case '\\':
+                        if (carryType != Token.Type.String)
+                            throw new Exception("escape char outside of a string defention");
+                        Next();
+                        switch (input[start]) {
+                            case 'n':
+                                carry += '\n';
+                                break;
+                            case 't':
+                                carryType += '\t';
+                                break;
+                            case '\"':
+                                carryType += '\"';
+                                break;
+                            case '\'':
+                                carryType += '\'';
+                                break;
+                            default:
+                                throw new Exception("unrecognized charecter after escape charecter");
+                        }
+                        break;
+                    //function call
+                    case '<':
+                        if(LookAhead()=='-')
+                            Next();
+                       BreakCarry();
+                       output.AddLast(new Token("<-", Token.Type.Operator));
+                       break;
+                    //default
+                    default:
+                        if(carryType==Token.Type.EOS)
+                            carryType=Token.Type.IdHEad;
+                        carry+=input[start];
+                        break;
+                }
+                Next();
+            }
+            return output;
+        }
+        public static LinkedList<Token> TokenizeOld (string input,int start, int end){
             LinkedList<Token> output=new LinkedList<Token>();
             string carry="";
             //end of stream carry is an emty carry.
@@ -267,5 +452,6 @@ namespace Interaptor {
             output.AddLast(new Token("$", Token.Type.EOS));
             return output;
         }
+        
     }
 }
