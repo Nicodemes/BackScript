@@ -5,26 +5,29 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Interaptor {
-    class ProgramDone {
+    class Program {
         static Interaptor raptor;
-
+        static Tokenizer nizer;
         static void Main(string[] args) {
-            
-
 
             raptor = new Interaptor();
-            
-            raptor.ActiveScope.AddFunction("~indaxer", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Indexer_Fu)), "index", "enums");
-            raptor.ActiveScope.AddFunction("list", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(List_Fu)), "items");
-            raptor.ActiveScope.AddFunction("Set", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Be_Fu)), "value", "id");
-            raptor.ActiveScope.AddFunction("Def", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Def_Fu)), "value", "id");
-            raptor.ActiveScope.AddFunction("Add", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Add_Fu)), "a", "b");
-            raptor.ActiveScope.AddFunction("Clear", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Clear_Fu)));
-            raptor.ActiveScope.AddFunction("Pop", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Pop_Fu)));
-            raptor.ActiveScope.AddFunction("Print", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Print_Fu)), "value");
-            raptor.ActiveScope.AddFunction("PrintL", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(PrintL_Fu)), "value");
+            List<string> ls=new List<string>();
+            ls.Add("hello");
+
+            raptor.pStack.Push(ls);
+
+            raptor.ActiveScope.AddFunction("Peek"    , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Peek_Fu)));
+            raptor.ActiveScope.AddFunction("~indexer", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Indexer_Fu)), "index", "enums");
+            raptor.ActiveScope.AddFunction("list"    , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(List_Fu)), "items");
+            raptor.ActiveScope.AddFunction("Set"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Be_Fu)), "value", "id");
+            raptor.ActiveScope.AddFunction("Def"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Def_Fu)), "value", "id");
+            raptor.ActiveScope.AddFunction("Add"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Add_Fu)), "a", "b");
+            raptor.ActiveScope.AddFunction("Clear"   , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Clear_Fu)));
+            raptor.ActiveScope.AddFunction("Pop"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Pop_Fu)));
+            raptor.ActiveScope.AddFunction("Print"   , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Print_Fu)), "value");
+            raptor.ActiveScope.AddFunction("PrintL"  , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(PrintL_Fu)), "value");
             raptor.ActiveScope.AddFunction("ReadFile", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ReadFile_Fu)), "path");
-            raptor.ActiveScope.AddFunction("Eval", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Eval_Fu)), "string");
+            raptor.ActiveScope.AddFunction("Eval"    , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Eval_Fu)), "string");
             raptor.ActiveScope.AddFunction("ReadLine", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ReadLine_Fu)));
             
             if (args.Length == 0) {
@@ -36,13 +39,11 @@ namespace Interaptor {
                     Console.ForegroundColor = ConsoleColor.White;
                     string row = Console.ReadLine();
 
-                    LinkedList<Token> tokens = null;
+                    LinkedList<object> tokens = null;
                     try {
                         try {
-                            tokens = Tokenizer.Tokenize(row, 0, row.Length);
-                            //foreach (Token item in tokens) 
-                            //   Console.WriteLine("[" + item.type + "] " + item.lexema);
-
+                            nizer = new Tokenizer(row);
+                            tokens =nizer.Tokenize();
                         }
                         catch (Exception e) {
                             throw new Exception("Syntax Error: " + e.Message);
@@ -68,10 +69,11 @@ namespace Interaptor {
                 string myString = myFile.ReadToEnd();
                 myFile.Close();
                 string row = myString;
-                LinkedList<Token> tokens = null;
+                LinkedList<object> tokens = null;
                 try {
                     try {
-                        tokens = Tokenizer.Tokenize(row, 0, row.Length);
+                        nizer = new Tokenizer(row);
+                        tokens = nizer.Tokenize();
                     }
                     catch (Exception e) {
                         throw new Exception("Syntax Error: " + e.Message);
@@ -137,9 +139,15 @@ namespace Interaptor {
             Console.Clear();
             return new Void();
         }
+       
         //pops one item from the pStack
         static object Pop_Fu(SymbolTable s) {
             raptor.ProcessStack.Pop();
+            return new Void();
+        }
+        //prints a variable to the screan
+        static object Peek_Fu(SymbolTable s) {
+            Console.Write(raptor.ProcessStack.Peek());
             return new Void();
         }
         //prints a variable to the screan
@@ -163,10 +171,11 @@ namespace Interaptor {
            
             raptor.EnterScope(new SymbolTable(raptor.ActiveScope));
             string row = s.GetValue(new Id("string")) as string;
-            LinkedList<Token> tokens = null;
+            LinkedList<object> tokens = null;
             try {
                 try {
-                    tokens = Tokenizer.Tokenize(row, 0, row.Length);
+                    nizer = new Tokenizer(row);
+                    tokens = nizer.Tokenize();
                 }
                 catch (Exception e) {
                     throw new Exception("Syntax Error: " + e.Message);
@@ -193,17 +202,19 @@ namespace Interaptor {
             Opcodes p = s.GetValue(new Id("items")) as Opcodes;
             List<object> toReturn= new List<object>();
             foreach( object  a in p.ops){
-                switch ((a as Token).type) {
-                  
-                    case Token.Type.String:
-                        toReturn.Add((a as Token).lexema);
-                        break;
-                    case Token.Type.Double:
-                        toReturn.Add(Double.Parse((a as Token).lexema));
-                        break;
-                    case Token.Type.Integer:
-                        toReturn.Add(Double.Parse((a as Token).lexema));
-                        break;
+                if (a is Token) {
+                    switch ((a as Token).type) {
+
+                        case Token.Type.String:
+                            toReturn.Add((a as Token).lexema);
+                            break;
+                        case Token.Type.Double:
+                            toReturn.Add(Double.Parse((a as Token).lexema));
+                            break;
+                        case Token.Type.Integer:
+                            toReturn.Add(Double.Parse((a as Token).lexema));
+                            break;
+                    }
                 }
             }
             return toReturn;            

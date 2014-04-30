@@ -4,22 +4,23 @@ using System.Collections.Generic;
 
 namespace Interaptor {
     class Tokenizer {
+        /*
         public static void Main() {
             string inr = Console.ReadLine();
-            Tokenizer t = new Tokenizer(inr);
-            LinkedList<Token> output = t.Tokenize();
+            Tokenizer obj = new Tokenizer(inr);
+            LinkedList<Token> output = obj.Tokenize();
             foreach (Token i in output)
                 Console.WriteLine("[" + i.type + "] " + i.lexema);
             Console.ReadLine();
-        }
+        }*/
         string input;
-        LinkedList<Token> output;
+        LinkedList<object> output;
 
         int start;
         int end;
         
         Token LookBack() {
-            return output.First.Value;
+            return (Token)output.First.Value;
         }
         char LookAhead() {
             return input[start+1];
@@ -33,11 +34,12 @@ namespace Interaptor {
         Token.Type carryType;
 
         void BreakCarry(){
-            if (carryType == Token.Type.EOS) {
+            if (carryType == Token.Type.EOS) 
                 return;
-            }
             if (carryType == Token.Type.IdTail)
                 carryType = Token.Type.IdEnd;
+            if (carryType == Token.Type.IdHead)
+                carryType = Token.Type.IdSingle;
             output.AddLast(new Token(carry, carryType));
             carry = "";
             carryType = Token.Type.EOS;
@@ -48,8 +50,11 @@ namespace Interaptor {
                 carryType = with;
                 return;
             }
-            if (carryType == Token.Type.IdTail)
-                carryType = Token.Type.IdEnd; 
+            if (carryType == Token.Type.IdTail && with!=Token.Type.IdTail)
+                carryType = Token.Type.IdEnd;
+            if (carryType == Token.Type.IdHead && with != Token.Type.IdTail)
+                carryType = Token.Type.IdSingle; 
+
             output.AddLast(new Token(carry, carryType));
             carry = "";
             carryType = with;
@@ -58,13 +63,13 @@ namespace Interaptor {
         public Tokenizer(string input) {
             start = 0;
             end = input.Length;
-            this.output = new LinkedList<Token>();
+            this.output = new LinkedList<object>();
             this.input = input;
             this.carry = "";
             carryType = Token.Type.EOS;
         }
         
-        public LinkedList<Token> Tokenize() {
+        public LinkedList<object> Tokenize() {
             while (start < end) {
                 char cur = input[start];
                 
@@ -104,10 +109,10 @@ namespace Interaptor {
                         if (carryType == Token.Type.IdHead) 
                             BreakCarry(Token.Type.IdTail);
                         //if you are now carrying tail - that means that there is more tail after him
-                        if (carryType == Token.Type.IdTail)
+                        else if (carryType == Token.Type.IdTail)
                             BreakCarry(Token.Type.IdTail);
                         //it may be inside of an integer-then it converts to doublee.
-                        if (carryType == Token.Type.Integer) {
+                        else if (carryType == Token.Type.Integer) {
                             carryType = Token.Type.Double;
                             carry += '.';
                         }
@@ -149,7 +154,7 @@ namespace Interaptor {
                     //indexer
                     case '[':
                         Next();
-                        BreakCarry(Token.Type.Indaxer);
+                        BreakCarry(Token.Type.Indexer);
                         while (input[start] != ']') {
                             carry += input[start];
                             Next();
@@ -196,10 +201,11 @@ namespace Interaptor {
                     
                     //function call
                     case '<':
+                        BreakCarry();
                         if(LookAhead()=='-')
                             Next();
-                       BreakCarry();
                        output.AddLast(new Token("<-", Token.Type.Operator));
+                       BreakCarry();
                        break;
                     //default
                     default:
@@ -236,7 +242,7 @@ namespace Interaptor {
                             if (input[start] != ']')
                                 carry2 += input[start];
                             else {
-                                output.AddLast(new Token(carry2, Token.Type.Indaxer));
+                                output.AddLast(new Token(carry2, Token.Type.Indexer));
                                 break;
                             }       
                         }

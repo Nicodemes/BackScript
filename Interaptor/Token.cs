@@ -15,13 +15,14 @@ namespace Interaptor {
             IdHead,
             IdTail,
             IdEnd,
+            IdSingle,
             FunctionCall,
             Integer,
             String,
             Double,
             Operator,
             EOS,
-            Indaxer,
+            Indexer,
         }
     }
 }

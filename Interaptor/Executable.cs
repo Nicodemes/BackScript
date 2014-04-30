@@ -8,13 +8,31 @@ namespace Interaptor {
     }
     class Opcodes : IExecutable {
         Interaptor machine;
-        public LinkedList<Token> ops;
+        public LinkedList<object> ops;
 
         public Opcodes(Interaptor machine) {
-            ops = new LinkedList<Token>();
+            ops = new LinkedList<object>();
             this.machine = machine;
         }
-
+        bool flag = false;
+        Opcodes newblock;
+        public void Append(Token t) {
+            if (t.type == Token.Type.Operator && t.lexema == "{") {
+                flag = true;
+                newblock = new Opcodes(this.machine);
+            }
+            if (flag) {
+                if (t.type == Token.Type.Operator && t.lexema == "}") {
+                    flag = false;
+                    this.ops.AddLast(newblock);
+                }
+                else 
+                    newblock.Append(t);   
+            }
+            else 
+                ops.AddLast(t);
+        }
+        
         public object ExecuteWithTable(SymbolTable tble) {
             return null;
         }

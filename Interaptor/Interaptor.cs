@@ -7,18 +7,20 @@ using System.Threading.Tasks;
 namespace Interaptor {
     class Interaptor {
 
-
-       
-        Stack<object> pStack;
+        public Stack<object> pStack;
         SymbolTable activeScope;
         public Stack<object> ProcessStack { get { return pStack; } }
 
         public SymbolTable ActiveScope { get { return activeScope; } set { this.activeScope = value; } }
-        public bool statCode = false;
-        public Opcodes tempRepo;
-
-        public bool exptFuCall = false;
         
+        //falgs.
+        bool exptFuCallFlag = false;
+        //this flag is on when you are interpreting op code blocks.
+        bool opBlockFlag = false;
+        //the new block that will be pushed into the stack after the closer
+        Opcodes newblock;
+
+
         public Interaptor() {
             pStack = new Stack<object>();
             activeScope = new SymbolTable(null);
@@ -26,22 +28,41 @@ namespace Interaptor {
 
         public void Reset() {
             pStack = new Stack<object>();
+            exptFuCallFlag = false;
         }
         
-        public void Process(Token t) {
-            if (statCode) {
+        public void Process(LinkedList<object> input) {
+            LinkedListNode<object> cur = input.First;
+            while (cur != null) {
+                this.Process(cur.Value);
+                cur = cur.Next;
+            }
+        }
+        private void Process(object obj) { 
+            if(obj is Token)
+                Process((Token)obj);
+            else
+                pStack.Push(obj);
+        }
+        private void Process(Token t) {
+
+            if (exptFuCallFlag) 
+                ExcpectFunctionCall(t);
+
+            else if (opBlockFlag) {
                 if (t.type == Token.Type.Operator && t.lexema == "}") {
-                    statCode = false;
-                    pStack.Push(tempRepo);
-                    return;
+                    opBlockFlag = false;
+                    this.pStack.Push(newblock);
                 }
-                tempRepo.ops.AddLast(t);
+                else {
+                    newblock.Append(t);
+                }
             }
             else
                 switch (t.type) {
-                    case Token.Type.Indaxer:
+                    case Token.Type.Indexer:
                         pStack.Push(int.Parse(t.lexema));
-                        CallFunction(new Id("~indaxer"));
+                        CallFunction(new Id("~indexer"));
                         break;
                     case Token.Type.Operator:
                         ProcessOperator(t.lexema);
@@ -63,6 +84,10 @@ namespace Interaptor {
                     case Token.Type.IdHead:
                         pStack.Push(new Id(t.lexema));
                         break;
+                    case Token.Type.IdSingle:
+                        pStack.Push(new Id(t.lexema));
+                        
+                        break;
 
                     case Token.Type.IdTail:
                         Id before = (Id)pStack.Peek();
@@ -72,17 +97,13 @@ namespace Interaptor {
                         break;
                 }
         }
-        public void Process(LinkedList<Token> input){
-            LinkedListNode<Token> cur = input.First;
-            while (cur != null) {
-                this.Process(cur.Value);
-                cur = cur.Next;
-            }
-        }
        
         private void ProcessOperator(string op) {
             try {
                 switch (op) {
+                    case "<-":
+                        exptFuCallFlag = true;
+                        break;
                     case "+":
                         CallFunction(new Id("Add"));
                         break;
@@ -100,10 +121,10 @@ namespace Interaptor {
                         CallFunction(new Id("Be"));
                         break;
                     case "{":
-                        this.statCode = true;
-                        this.tempRepo = new Opcodes(this);
+                        opBlockFlag = true;
+                        newblock = new Opcodes(this);
                         break;
-                    case "<-":
+                    
 
                     default: 
                         throw new Exception("invalid Operator");
@@ -113,6 +134,28 @@ namespace Interaptor {
             catch (InvalidOperationException e) {
                 throw new Exception("Noth enoth openders to continue the operation");
             }
+        }
+
+        void ExcpectFunctionCall(Token t) {
+            if (t.type == Token.Type.IdSingle) {
+                CallFunction(new Id(t.lexema));
+                exptFuCallFlag = false;
+            }
+            else if (t.type == Token.Type.IdHead) {
+                pStack.Push(new Id(t.lexema));
+            }
+            else if (t.type == Token.Type.IdTail) {
+                Id before = (Id)pStack.Peek();
+                before.AddPath(t.lexema);
+            }
+            else if (t.type == Token.Type.IdEnd) {
+                Id before = (Id)pStack.Pop();
+                before.AddPath(t.lexema);
+                CallFunction(before);
+                exptFuCallFlag = false;
+            }
+            else
+                throw new Exception("invalid function call");
         }
 
         public void EnterScope(SymbolTable t) {
@@ -128,7 +171,7 @@ namespace Interaptor {
 
 
         public void CallFunction(Id name) {
-            //the id of the function is t.lexema
+            //the id of the function is obj.lexema
 
             //get the number of aprands that this function resiave
             int limit = this.activeScope.GetFunctionParametersCount(name);
