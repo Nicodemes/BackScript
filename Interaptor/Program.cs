@@ -44,6 +44,7 @@ namespace Interaptor {
             //-------------------------------------------------------------------------------------------------------------------------------------------
 
             if (args.Length == 0) {
+                Console.WriteLine("BackScript Interapter  Copyright (C) 2014  Nicodemes sasha@paticon.com \nThis program comes with ABSOLUTELY NO WARRANTY; for details type `show w'.\n This is free software, and you are welcome to redistribute it\nunder certain conditions; type `show c' for details.");
                 while (true) {
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.Write("backScript");

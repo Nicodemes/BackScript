@@ -43,17 +43,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Interaptor.exe" size="123392">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Interaptor.exe" size="122368">
       <assemblyIdentity name="Interaptor" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>4iCOm1CbMUBrKmGmpsshShV9JYKSwpNlYU78D/Fmc9g=</dsig:DigestValue>
+        <dsig:DigestValue>qBL0eAiybeNRSpI6SP6XoHtvuc9/cOvXqb081u24dUA=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
+  <file name="bin\Debug\Interaptor.exe" size="123392">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>4iCOm1CbMUBrKmGmpsshShV9JYKSwpNlYU78D/Fmc9g=</dsig:DigestValue>
+    </hash>
+  </file>
   <file name="Interaptor.exe.config" size="187">
     <hash>
       <dsig:Transforms>
