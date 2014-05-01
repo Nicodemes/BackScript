@@ -7,3 +7,4 @@ E:\cs\proj\Interaptor\Interaptor\obj\Release\Interaptor.exe.manifest
 E:\cs\proj\Interaptor\Interaptor\obj\Release\Interaptor.application
 E:\cs\proj\Interaptor\Interaptor\obj\Release\Interaptor.exe
 E:\cs\proj\Interaptor\Interaptor\obj\Release\Interaptor.pdb
+E:\cs\proj\Interaptor\Interaptor\obj\Release\Interaptor.csprojResolveAssemblyReference.cache
