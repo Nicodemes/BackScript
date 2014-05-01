@@ -5,15 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Interaptor {
+namespace Interpreter {
     class Program {
-        static Interaptor raptor;
+        static Interpreter raptor;
         static Tokenizer nizer;
         static void Main(string[] args) {
 
             //Hello {"param1"}<-list {param1<PrintL} <-function
 
-            raptor = new Interaptor();
+            raptor = new Interpreter();
 
             ///*Registry*//
             //--------------------------------------------------------------------------------------------------------------------------------------

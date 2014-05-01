@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 
-namespace Interaptor {
+namespace Interpreter {
     interface IExecutable {
         object ExecuteWithTable(SymbolTable tble);
     }
     class Opcodes : IExecutable {
-        Interaptor machine;
+        Interpreter machine;
         public LinkedList<object> ops;
 
         public Opcodes() {
@@ -36,7 +36,7 @@ namespace Interaptor {
 #if _DEBUG
             Console.WriteLine("Executing with table " + tble);
 #endif
-            this.machine = new Interaptor();
+            this.machine = new Interpreter();
             this.machine.EnterScope(tble);
             machine.Process(ops);
             object toReturn;

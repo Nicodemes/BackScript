@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace Interaptor {
+namespace Interpreter {
     class Tokenizer {
         /*
         public static void Main() {

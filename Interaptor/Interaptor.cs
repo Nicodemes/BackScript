@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Interaptor {
-    class Interaptor {
+namespace Interpreter {
+    class Interpreter {
 
         Stack<object> pStack;
         SymbolTable activeScope;
@@ -22,7 +22,7 @@ namespace Interaptor {
         Opcodes newblock;
 
 
-        public Interaptor() {
+        public Interpreter() {
             pStack = new Stack<object>();
             activeScope = new SymbolTable(null);
         }

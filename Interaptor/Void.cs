@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-namespace Interaptor {
+namespace Interpreter {
     class Void {
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-namespace Interaptor {
+namespace Interpreter {
     class Token {
 
         public Token.Type type;

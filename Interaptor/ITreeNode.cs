@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Interaptor {
+namespace Interpreter {
     interface ITreeNode {
             SymbolTable Perent { get; set; }
     }

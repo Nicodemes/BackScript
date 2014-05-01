@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Interaptor {
+namespace Interpreter {
     class Id {
         public LinkedList<string> Path { get; set; }
         public string Head { get { return Path.First.Value; } }
