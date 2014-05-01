@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Executable.cs" />
     <Compile Include="Interaptor.cs" />
+    <Compile Include="ITreeNode.cs" />
     <Compile Include="Program.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -1,4 +1,4 @@
-﻿
+﻿#define _DEBUG
 using System;
 using System.Collections.Generic;
 
@@ -10,16 +10,15 @@ namespace Interaptor {
         Interaptor machine;
         public LinkedList<object> ops;
 
-        public Opcodes(Interaptor machine) {
+        public Opcodes() {
             ops = new LinkedList<object>();
-            this.machine = machine;
         }
         bool flag = false;
         Opcodes newblock;
         public void Append(Token t) {
             if (t.type == Token.Type.Operator && t.lexema == "{") {
                 flag = true;
-                newblock = new Opcodes(this.machine);
+                newblock = new Opcodes();
             }
             if (flag) {
                 if (t.type == Token.Type.Operator && t.lexema == "}") {
@@ -34,7 +33,21 @@ namespace Interaptor {
         }
         
         public object ExecuteWithTable(SymbolTable tble) {
-            return null;
+#if _DEBUG
+            Console.WriteLine("Executing with table " + tble);
+#endif
+            this.machine = new Interaptor();
+            this.machine.EnterScope(tble);
+            machine.Process(ops);
+            object toReturn;
+            if(machine.ProcessStack.Count>0)
+                toReturn=machine.ProcessStack.Peek();
+            else
+                toReturn = new Void();
+#if _DEBUG
+            Console.WriteLine(" returning "+toReturn);
+#endif
+            return toReturn;
         }
     }
     class ReservedFunction: IExecutable {
@@ -48,6 +61,7 @@ namespace Interaptor {
         }
 
         public object ExecuteWithTable(SymbolTable tble) {
+            //Console.WriteLine("Executing with table " + tble.GetHashCode());
             return toDo(tble);
         }
     }

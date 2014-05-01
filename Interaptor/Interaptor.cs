@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define _DEBUG
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 namespace Interaptor {
     class Interaptor {
 
-        public Stack<object> pStack;
+        Stack<object> pStack;
         SymbolTable activeScope;
         public Stack<object> ProcessStack { get { return pStack; } }
 
@@ -122,7 +123,7 @@ namespace Interaptor {
                         break;
                     case "{":
                         opBlockFlag = true;
-                        newblock = new Opcodes(this);
+                        newblock = new Opcodes();
                         break;
                     
 
@@ -164,13 +165,17 @@ namespace Interaptor {
         }
         public void ScopeOut() {
            
-            this.activeScope = this.activeScope.Father;
+            this.activeScope = this.activeScope.Perent;
             if (activeScope == null)
                 throw new Exception(" you are trying to scope out of the last scoup");
         }
 
 
         public void CallFunction(Id name) {
+            
+#if _DEBUG
+            Console.WriteLine("Program calling function "+name+" from scope "+this.activeScope.GetHashCode());
+#endif
             //the id of the function is obj.lexema
 
             //get the number of aprands that this function resiave
@@ -178,10 +183,17 @@ namespace Interaptor {
 
             //the parameters that will be passed to the function call
             List<object> parameters = new List<object>();
-
+#if _DEBUG
+            for (int i = 0; i < limit; i++) {
+                object toAdd = pStack.Pop();
+                Console.WriteLine("Poping parameter n" + i + " : " + toAdd);
+                parameters.Add(toAdd);
+            }
+                
+#else
             for (int i = 0; i < limit; i++)
                 parameters.Add(pStack.Pop());
-
+#endif
             //push to the top of the stack the result
             object returned = this.activeScope.CallFunction(name, parameters);
             if (!(returned is Void))

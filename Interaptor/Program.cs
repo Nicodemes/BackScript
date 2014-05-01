@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define _DEBUG
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,17 +11,15 @@ namespace Interaptor {
         static Tokenizer nizer;
         static void Main(string[] args) {
 
+            //Hello {"param1"}<-list {param1<PrintL} <-function
+
             raptor = new Interaptor();
-            List<string> ls=new List<string>();
-            ls.Add("hello");
 
-            raptor.pStack.Push(ls);
-
-            raptor.ActiveScope.AddFunction("Peek"    , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Peek_Fu)));
+            ///*Registry*//
+            //--------------------------------------------------------------------------------------------------------------------------------------
+           
             raptor.ActiveScope.AddFunction("~indexer", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Indexer_Fu)), "index", "enums");
-            raptor.ActiveScope.AddFunction("list"    , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(List_Fu)), "items");
             raptor.ActiveScope.AddFunction("Set"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Be_Fu)), "value", "id");
-            raptor.ActiveScope.AddFunction("Def"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Def_Fu)), "value", "id");
             raptor.ActiveScope.AddFunction("Add"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Add_Fu)), "a", "b");
             raptor.ActiveScope.AddFunction("Clear"   , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Clear_Fu)));
             raptor.ActiveScope.AddFunction("Pop"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Pop_Fu)));
@@ -29,7 +28,21 @@ namespace Interaptor {
             raptor.ActiveScope.AddFunction("ReadFile", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ReadFile_Fu)), "path");
             raptor.ActiveScope.AddFunction("Eval"    , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Eval_Fu)), "string");
             raptor.ActiveScope.AddFunction("ReadLine", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ReadLine_Fu)));
-            
+            //casting
+            raptor.ActiveScope.AddFunction("list", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ListCast_Fu)), "items");
+            raptor.ActiveScope.AddFunction("int", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(IntCast_Fu)), "toCast");
+            //Decloration
+            raptor.ActiveScope.AddFunction("Def", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Def_Fu)), "value", "id");
+            raptor.ActiveScope.AddFunction("function", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(DefMethod_Fu)), "body" , "paramList", "id");
+#if _DEBUG
+            //DEBUGGING
+            raptor.ActiveScope.AddFunction("Peek",        new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Peek_Fu)));
+            raptor.ActiveScope.AddFunction("ActiveScope", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ActiveScope_Fu)));
+            raptor.ActiveScope.AddFunction("HashCode",    new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(HashCode_Fu)),"obj");
+            raptor.ActiveScope.AddFunction("Perent",      new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Perent_Fu)), "obj");
+#endif
+            //-------------------------------------------------------------------------------------------------------------------------------------------
+
             if (args.Length == 0) {
                 while (true) {
                     Console.ForegroundColor = ConsoleColor.Blue;
@@ -109,19 +122,7 @@ namespace Interaptor {
             //Console.WriteLine("variable \"" + name + "\" has been assigend with the value \"" + value.ToString() + "\"");
             return s.SetVariable(name, value);
         }
-        //defines a new vireavle
-        static object Def_Fu(SymbolTable s) {
-            if (!(s.GetVariable(new Id("id")) is Id)) 
-                throw new Exception("invalid ID");
-            string name = (s.GetVariable(new Id("id")) as Id).ToString();
-            object value = s.GetVariable(new Id("value"));
-            
-            while(value is Id)
-                value = s.GetVariable(value as Id);
-            s.Father.AddVariable(name , value);
-            //Console.WriteLine("variable \"" + name + "\" has been assigend with the value \"" +value.ToString() +"\"");
-            return s.GetVariable(new Id("id"));
-        }
+        
         //you can add 2 variables
         static object Add_Fu(SymbolTable s) {
 
@@ -134,6 +135,8 @@ namespace Interaptor {
                 throw new Exception("you cannot add " + a.GetType() + " and " + b.GetType());
             }
         }
+        
+        
         //clears the screan 
         static object Clear_Fu(SymbolTable s) {
             Console.Clear();
@@ -198,10 +201,21 @@ namespace Interaptor {
             raptor.ScopeOut();
             return new Void();
         }
-        static object List_Fu(SymbolTable s) {
+        
+        static object Indexer_Fu(SymbolTable s) {
+            int p = (int)s.GetValue(new Id("index"));
+            IEnumerable<object> ls =( IEnumerable<object>) s.GetValue(new Id("enums"));
+            return ls.ElementAt<object>(p);
+        }
+        static object ReadLine_Fu(SymbolTable s) {
+            return Console.ReadLine();
+        }
+
+        //casting
+        static object ListCast_Fu(SymbolTable s) {
             Opcodes p = s.GetValue(new Id("items")) as Opcodes;
-            List<object> toReturn= new List<object>();
-            foreach( object  a in p.ops){
+            List<object> toReturn = new List<object>();
+            foreach (object a in p.ops) {
                 if (a is Token) {
                     switch ((a as Token).type) {
 
@@ -216,17 +230,64 @@ namespace Interaptor {
                             break;
                     }
                 }
+                    
             }
-            return toReturn;            
+            return toReturn;
+        }
+        static object IntCast_Fu(SymbolTable s) {
+            object toCast = s.GetValue(new Id("toCast"));
+            return Convert.ChangeType(toCast, typeof(int));
+        }
+        static object DoubleCast_Fu(SymbolTable s) {
+            object toCast = s.GetValue(new Id("toCast"));
+            return Convert.ChangeType(toCast, typeof(double));
         }
 
-        static object Indexer_Fu(SymbolTable s) {
-            int p = (int)s.GetValue(new Id("index"));
-            IEnumerable<object> ls =( IEnumerable<object>) s.GetValue(new Id("enums"));
-            return ls.ElementAt<object>(p);
+        //Decloration
+        static object Def_Fu(SymbolTable s) {
+            if (!(s.GetVariable(new Id("id")) is Id))
+                throw new Exception("invalid ID");
+            string name = (s.GetVariable(new Id("id")) as Id).ToString();
+            object value = s.GetValue(new Id("value"));
+
+            s.Perent.AddVariable(name, value);
+            //Console.WriteLine("variable \"" + name + "\" has been assigend with the value \"" +value.ToString() +"\"");
+            return s.GetVariable(new Id("id"));
         }
-        static object ReadLine_Fu(SymbolTable s) {
-            return Console.ReadLine();
+        static object DefMethod_Fu(SymbolTable s) { 
+            //body -opCodes
+            //paramList -list 
+            //id - id
+            if (!(s.GetVariable(new Id("id")) is Id))
+                throw new Exception("invalid ID");
+            string name = (s.GetVariable(new Id("id")) as Id).ToString();
+            
+            //db
+            Opcodes body = s.GetVariable(new Id("body")) as Opcodes;
+            List<object> raw =  s.GetValue(new Id("paramList")) as List<object>;
+            List<string> param = raw.Select(k => (string)k).ToList();
+#if _DEBUG
+            string toSay = "Defining new Function\n  name: " + name+"\n  params: ";
+            foreach (var item in param) 
+                toSay += item;
+            
+            Console.WriteLine(toSay);
+#endif
+            s.Perent.AddFunction(name, body, param);
+            return new Void();
         }
+         
+#if _DEBUG
+        static object ActiveScope_Fu(SymbolTable s) {
+            return raptor.ActiveScope;
+        }
+        static object HashCode_Fu(SymbolTable s) {
+            return s.GetValue(new Id("obj")).GetHashCode();
+        }
+        static object Perent_Fu(SymbolTable s) {
+            return (s.GetValue(new Id("obj")) as ITreeNode).Perent;
+        }
+
+#endif
     }
 }
