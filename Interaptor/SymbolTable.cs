@@ -1,4 +1,4 @@
-﻿//#define _DEBUG
+﻿#define _DEBUG
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +18,12 @@ namespace Interpreter {
 
         public void AddVariable(string name, object value) {
 #if _DEBUG
-            Console.WriteLine("  "+this+ " is adding variable " + name+" with the value "+value);
+            string toSay;
+            if (value is Id)
+                toSay = "$" + value;
+            else
+                toSay = value.ToString();
+            Console.WriteLine("  "+this+ " adds variable " + name+" = "+toSay);
 #endif
                 _symbols.Add(name, value);
             
@@ -37,21 +42,6 @@ namespace Interpreter {
         }
         
      
-        //calls a function with a spechific id
-        
-        public object CallFunction(Id id, List<object> variables) {
-
-#if _DEBUG
-            Console.WriteLine("  "+this+" calling Function " + id);
-#endif 
-            FunctionBLock blc = (FunctionBLock)this.GetValue(id);
-            return blc.Operation.ExecuteWithTable(blc.GetCallSymbolTable(this, variables));
-        }
-        public int GetFunctionParametersCount(Id id) {
-            FunctionBLock blc = (FunctionBLock)this.GetValue(id);
-            return blc.ParametersCount;
-        }
-        
         public object GetVariable(Id id) {
 
 #if _DEBUG
@@ -124,41 +114,41 @@ namespace Interpreter {
             return new SymbolTable(this);
         }
         public override string ToString() {
-            return "[" + this.GetHashCode() + "]";
+            return "table#" + this.GetHashCode();
         }
-        class FunctionBLock {
-            
-            List<string> parameters;
-            public int ParametersCount { get { return this.parameters.Count; } }
+        
+    }
+    class FunctionBLock {
 
-            public IExecutable Operation { get; set; }
+        List<string> parameters;
+        public int ParametersCount { get { return this.parameters.Count; } }
+
+        public IExecutable Executable { get; set; }
 
 
-            public FunctionBLock(List<string> parameters, IExecutable exe) {
-                this.parameters = parameters;
-                this.Operation = exe;
-            }
+        public FunctionBLock(List<string> parameters, IExecutable exe) {
+            this.parameters = parameters;
+            this.Executable = exe;
+        }
 
-            public SymbolTable GetCallSymbolTable(SymbolTable s , List<object> variables) {
-                SymbolTable fuTable = new SymbolTable(s);
+        public SymbolTable GetCallSymbolTable(SymbolTable s, List<object> variables) {
+            SymbolTable fuTable = new SymbolTable(s);
 #if _DEBUG
                 Console.WriteLine("Building call table "+fuTable+"...");
 #endif
-                
-                
-                if (variables.Count != this.parameters.Count) {
-                    throw new Exception("Interpretation error: parameters length dont match");
-                }
-                for (int i = 0; i < variables.Count; i++) {
-                    fuTable.AddVariable(this.parameters[i], variables[i]);
-                }
+
+
+            if (variables.Count != this.parameters.Count) {
+                throw new Exception("Interpretation error: parameters length dont match");
+            }
+            for (int i = 0; i < variables.Count; i++) {
+                fuTable.AddVariable(this.parameters[i], variables[i]);
+            }
 #if _DEBUG
                 Console.WriteLine("Done building " + fuTable);
 #endif
-                return fuTable;
-            }
-           
+            return fuTable;
         }
-    }
 
+    }
 }

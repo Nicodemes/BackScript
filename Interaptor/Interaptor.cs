@@ -1,4 +1,4 @@
-﻿//#define _DEBUG
+﻿#define _DEBUG
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Interpreter {
+    //foo {"a"}<-list {a 1 + <PrintL; } <-function
     class Interpreter {
-
         Stack<object> pStack;
         SymbolTable activeScope;
-        public Stack<object> ProcessStack { get { return pStack; } }
+        public Stack<object> ProcessStack { get { return pStack; } set { this.pStack = value; } }
 
         public SymbolTable ActiveScope { get { return activeScope; } set { this.activeScope = value; } }
         
@@ -18,6 +18,13 @@ namespace Interpreter {
         bool exptFuCallFlag = false;
         //this flag is on when you are interpreting op code blocks.
         bool opBlockFlag = false;
+        //stop flag
+        bool stopFlag = false;
+        public object Return(SymbolTable s){
+            stopFlag = true;
+            return new ReturnObject(s.GetValue(new Id("toReturn")));
+        }
+
         //the new block that will be pushed into the stack after the closer
         Opcodes newblock;
 
@@ -26,6 +33,10 @@ namespace Interpreter {
             pStack = new Stack<object>();
             activeScope = new SymbolTable(null);
         }
+        public Interpreter(Stack<object> proccesStack, SymbolTable activeScope) {
+            pStack = proccesStack;
+            this.EnterScope(activeScope);
+        }
 
         public void Reset() {
             pStack = new Stack<object>();
@@ -33,11 +44,11 @@ namespace Interpreter {
         }
         
         public void Process(LinkedList<object> input) {
-            LinkedListNode<object> cur = input.First;
-            while (cur != null) {
-                this.Process(cur.Value);
-                cur = cur.Next;
-            }
+            LinkedListNode<object> cur = input.First;       
+                while (cur != null && !stopFlag) {
+                    this.Process(cur.Value);
+                    cur = cur.Next;
+                }
         }
         private void Process(object obj) { 
             if(obj is Token)
@@ -160,16 +171,23 @@ namespace Interpreter {
         }
 
         public void EnterScope(SymbolTable t) {
-         
+#if _DEBUG
+            Console.WriteLine("Entering Scope " + t);
+#endif
             this.activeScope = t;
         }
         public void ScopeOut() {
-           
+#if _DEBUG
+            Console.Write("Leaving Scope " + this.ActiveScope);
+#endif
             this.activeScope = this.activeScope.Perent;
             if (activeScope == null)
                 throw new Exception(" you are trying to scope out of the last scoup");
+#if _DEBUG
+            Console.WriteLine(" to scope " + this.ActiveScope);
+#endif
         }
-
+        
 
         public void CallFunction(Id name) {
             
@@ -178,9 +196,12 @@ namespace Interpreter {
 #endif
             //the id of the function is obj.lexema
 
-            //get the number of aprands that this function resiave
-            int limit = this.activeScope.GetFunctionParametersCount(name);
+            //get the fucnion block
+            
+            FunctionBLock funBlock =(FunctionBLock)this.activeScope.GetValue(name);
 
+            //get the number of aprands that this function resiave
+            int limit = funBlock.ParametersCount;
             //the parameters that will be passed to the function call
             List<object> parameters = new List<object>();
 #if _DEBUG
@@ -194,11 +215,14 @@ namespace Interpreter {
             for (int i = 0; i < limit; i++)
                 parameters.Add(pStack.Pop());
 #endif
-            //push to the top of the stack the result
-            object returned = this.activeScope.CallFunction(name, parameters);
-            if (!(returned is Void))
-                pStack.Push(returned);
+            Interpreter t = new Interpreter(this.ProcessStack, funBlock.GetCallSymbolTable(this.ActiveScope, parameters));
+            t.activeScope.AddFunction("return", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(t.Return)), "toReturn");
+            funBlock.Executable.ExecuteByhInterpreter(t);
+        }
 
+        public override string ToString() {
+            return "i@"+this.GetHashCode();
         }
     }
+    
 }

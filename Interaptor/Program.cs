@@ -11,29 +11,27 @@ namespace Interpreter {
         static Tokenizer nizer;
         static void Main(string[] args) {
 
-            //Hello {"param1"}<-list {param1<PrintL} <-function
-
             raptor = new Interpreter();
 
             ///*Registry*//
             //--------------------------------------------------------------------------------------------------------------------------------------
            
-            raptor.ActiveScope.AddFunction("~indexer", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Indexer_Fu)), "index", "enums");
-            raptor.ActiveScope.AddFunction("Set"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Be_Fu)), "value", "id");
-            raptor.ActiveScope.AddFunction("Add"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Add_Fu)), "a", "b");
+            raptor.ActiveScope.AddFunction("~indexer", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Indexer_Fu)), "~index", "~enums");
+            raptor.ActiveScope.AddFunction("Set"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Be_Fu)), "~value", "~id");
+            raptor.ActiveScope.AddFunction("Add"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Add_Fu)), "~a", "~b");
             raptor.ActiveScope.AddFunction("Clear"   , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Clear_Fu)));
             raptor.ActiveScope.AddFunction("Pop"     , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Pop_Fu)));
-            raptor.ActiveScope.AddFunction("Print"   , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Print_Fu)), "value");
-            raptor.ActiveScope.AddFunction("PrintL"  , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(PrintL_Fu)), "value");
-            raptor.ActiveScope.AddFunction("ReadFile", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ReadFile_Fu)), "path");
-            raptor.ActiveScope.AddFunction("Eval"    , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Eval_Fu)), "string");
+            raptor.ActiveScope.AddFunction("Print"   , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Print_Fu)), "~toPrint");
+            raptor.ActiveScope.AddFunction("PrintL"  , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(PrintL_Fu)), "~toPrint");
+            raptor.ActiveScope.AddFunction("ReadFile", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ReadFile_Fu)), "~path");
+            raptor.ActiveScope.AddFunction("Eval"    , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Eval_Fu)), "~string");
             raptor.ActiveScope.AddFunction("ReadLine", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ReadLine_Fu)));
             //casting
             raptor.ActiveScope.AddFunction("list", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ListCast_Fu)), "items");
             raptor.ActiveScope.AddFunction("int", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(IntCast_Fu)), "toCast");
             //Decloration
-            raptor.ActiveScope.AddFunction("Def", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Def_Fu)), "value", "id");
-            raptor.ActiveScope.AddFunction("function", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(DefMethod_Fu)), "body" , "paramList", "id");
+            raptor.ActiveScope.AddFunction("Def", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Def_Fu)), "~value", "~id");
+            raptor.ActiveScope.AddFunction("function", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(DefMethod_Fu)), "~body" , "~paramList", "~id");
 #if _DEBUG
             //DEBUGGING
             raptor.ActiveScope.AddFunction("Peek",        new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Peek_Fu)));
@@ -113,10 +111,10 @@ namespace Interpreter {
         
         //assigens value to variable
         static object Be_Fu(SymbolTable s) {
-            if (!(s.GetVariable(new Id("id")) is Id))
+            if (!(s.GetVariable(new Id("~id")) is Id))
                 throw new Exception("invalid ID");
             Id name = (s.GetVariable(new Id("id")) as Id);
-            object value = s.GetVariable(new Id("value"));
+            object value = s.GetVariable(new Id("~value"));
             
             while (value is Id)
                 value = s.GetVariable(value as Id);
@@ -127,8 +125,8 @@ namespace Interpreter {
         //you can add 2 variables
         static object Add_Fu(SymbolTable s) {
 
-            object a = s.GetValue(new Id("a"));
-            object b = s.GetValue(new Id("b"));
+            object a = s.GetValue(new Id("~a"));
+            object b = s.GetValue(new Id("~b"));
             try {
                 return (double)a + (double)b;
             }
@@ -156,17 +154,17 @@ namespace Interpreter {
         }
         //prints a variable to the screan
         static object Print_Fu(SymbolTable s) {
-            Console.Write(s.GetValue(new Id("value")));
+            Console.Write(s.GetValue(new Id("~toPrint")));
             return new Void();
         }
         //Console.Writeine()
         static object PrintL_Fu(SymbolTable s) {
-            Console.WriteLine(s.GetValue(new Id("value")));
+            Console.WriteLine(s.GetValue(new Id("~toPrint")));
             return new Void();
         }
         static object ReadFile_Fu(SymbolTable s) {
             System.IO.StreamReader myFile =
-            new System.IO.StreamReader(s.GetValue(new Id("path"))as string);
+            new System.IO.StreamReader(s.GetValue(new Id("~path"))as string);
             string myString = myFile.ReadToEnd();
             myFile.Close();
             return myString;
@@ -174,7 +172,7 @@ namespace Interpreter {
         static object Eval_Fu(SymbolTable s) {
            
             raptor.EnterScope(new SymbolTable(raptor.ActiveScope));
-            string row = s.GetValue(new Id("string")) as string;
+            string row = s.GetValue(new Id("~string")) as string;
             LinkedList<object> tokens = null;
             try {
                 try {
@@ -204,8 +202,8 @@ namespace Interpreter {
         }
         
         static object Indexer_Fu(SymbolTable s) {
-            int p = (int)s.GetValue(new Id("index"));
-            IEnumerable<object> ls =( IEnumerable<object>) s.GetValue(new Id("enums"));
+            int p = (int)s.GetValue(new Id("~index"));
+            IEnumerable<object> ls =( IEnumerable<object>) s.GetValue(new Id("~enums"));
             return ls.ElementAt<object>(p);
         }
         static object ReadLine_Fu(SymbolTable s) {
@@ -246,26 +244,26 @@ namespace Interpreter {
 
         //Decloration
         static object Def_Fu(SymbolTable s) {
-            if (!(s.GetVariable(new Id("id")) is Id))
+            if (!(s.GetVariable(new Id("~id")) is Id))
                 throw new Exception("invalid ID");
-            string name = (s.GetVariable(new Id("id")) as Id).ToString();
-            object value = s.GetValue(new Id("value"));
+            string name = (s.GetVariable(new Id("~id")) as Id).ToString();
+            object value = s.GetValue(new Id("~value"));
 
             s.Perent.AddVariable(name, value);
             //Console.WriteLine("variable \"" + name + "\" has been assigend with the value \"" +value.ToString() +"\"");
-            return s.GetVariable(new Id("id"));
+            return s.GetVariable(new Id("~id"));
         }
         static object DefMethod_Fu(SymbolTable s) { 
             //body -opCodes
             //paramList -list 
             //id - id
-            if (!(s.GetVariable(new Id("id")) is Id))
+            if (!(s.GetVariable(new Id("~id")) is Id))
                 throw new Exception("invalid ID");
-            string name = (s.GetVariable(new Id("id")) as Id).ToString();
+            string name = (s.GetVariable(new Id("~id")) as Id).ToString();
             
             //db
-            Opcodes body = s.GetVariable(new Id("body")) as Opcodes;
-            List<object> raw =  s.GetValue(new Id("paramList")) as List<object>;
+            Opcodes body = s.GetVariable(new Id("~body")) as Opcodes;
+            List<object> raw =  s.GetValue(new Id("~paramList")) as List<object>;
             List<string> param = raw.Select(k => (string)k).ToList();
 #if _DEBUG
             string toSay = "Defining new Function\n  name: " + name+"\n  params: ";

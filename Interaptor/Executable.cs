@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 namespace Interpreter {
     interface IExecutable {
-        object ExecuteWithTable(SymbolTable tble);
+        void ExecuteByhInterpreter(Interpreter machine);
     }
     class Opcodes : IExecutable {
-        Interpreter machine;
         public LinkedList<object> ops;
 
         public Opcodes() {
             ops = new LinkedList<object>();
         }
+        
         bool flag = false;
         Opcodes newblock;
         public void Append(Token t) {
@@ -31,23 +31,45 @@ namespace Interpreter {
             else 
                 ops.AddLast(t);
         }
-        
-        public object ExecuteWithTable(SymbolTable tble) {
+
+        public void ExecuteByhInterpreter(Interpreter machine) {
 #if _DEBUG
-            Console.WriteLine("Executing with table " + tble);
+            Console.WriteLine("Opcodes Executing with  machine "+machine);
 #endif
-            this.machine = new Interpreter();
-            this.machine.EnterScope(tble);
+            //remember the old pStack of the machine and replace with a new stack segment.
+            ReturnStack s= new ReturnStack(machine);
             machine.Process(ops);
-            object toReturn;
-            if(machine.ProcessStack.Count>0)
-                toReturn=machine.ProcessStack.Peek();
-            else
-                toReturn = new Void();
-#if _DEBUG
-            Console.WriteLine(" returning "+toReturn);
-#endif
-            return toReturn;
+            s.Return();
+        }
+        class ReturnStack {
+            public Stack<object> perent;
+            private Interpreter r;
+            public ReturnStack(Interpreter r ) {
+                this.r = r;
+                this.perent = r.ProcessStack;
+                r.ProcessStack = new Stack<object>();
+            }
+            public void Return() {
+                
+                //check the numberof objects in the cur returnstack
+                if (r.ProcessStack.Count > 0) {
+                   
+                    object toReturn = r.ProcessStack.Peek();
+                    //check if the returned object is actually returnd
+                    
+                    if (!(toReturn is ReturnObject))
+                        throw new Exception(" Return expeted");
+                    //if it is , push it as reutned. if it is void, fo nothing.
+                    if (toReturn is Void)
+                         r.ProcessStack = perent;
+                    else
+                        perent.Push((toReturn as ReturnObject).toReturn);
+                }
+                else {
+                    r.ProcessStack = perent;
+                }
+                
+            }
         }
     }
     class ReservedFunction: IExecutable {
@@ -60,9 +82,9 @@ namespace Interpreter {
             this.toDo = toDo;
         }
 
-        public object ExecuteWithTable(SymbolTable tble) {
+        public void ExecuteByhInterpreter(Interpreter machine){
             //Console.WriteLine("Executing with table " + tble.GetHashCode());
-            return toDo(tble);
+            machine.ProcessStack.Push(toDo(machine.ActiveScope));
         }
     }
 }
