@@ -27,8 +27,8 @@ namespace Interpreter {
             raptor.ActiveScope.AddFunction("Eval"    , new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Eval_Fu)), "~string");
             raptor.ActiveScope.AddFunction("ReadLine", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ReadLine_Fu)));
             //casting
-            raptor.ActiveScope.AddFunction("list", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ListCast_Fu)), "items");
-            raptor.ActiveScope.AddFunction("int", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(IntCast_Fu)), "toCast");
+            raptor.ActiveScope.AddFunction("list", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(ListCast_Fu)), "~items");
+            raptor.ActiveScope.AddFunction("int", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(IntCast_Fu)), "~toCast");
             //Decloration
             raptor.ActiveScope.AddFunction("Def", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(Def_Fu)), "~value", "~id");
             raptor.ActiveScope.AddFunction("function", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(DefMethod_Fu)), "~body" , "~paramList", "~id");
@@ -212,7 +212,7 @@ namespace Interpreter {
 
         //casting
         static object ListCast_Fu(SymbolTable s) {
-            Opcodes p = s.GetValue(new Id("items")) as Opcodes;
+            Opcodes p = s.GetValue(new Id("~items")) as Opcodes;
             List<object> toReturn = new List<object>();
             foreach (object a in p.ops) {
                 if (a is Token) {
@@ -234,11 +234,11 @@ namespace Interpreter {
             return toReturn;
         }
         static object IntCast_Fu(SymbolTable s) {
-            object toCast = s.GetValue(new Id("toCast"));
+            object toCast = s.GetValue(new Id("~toCast"));
             return Convert.ChangeType(toCast, typeof(int));
         }
         static object DoubleCast_Fu(SymbolTable s) {
-            object toCast = s.GetValue(new Id("toCast"));
+            object toCast = s.GetValue(new Id("~toCast"));
             return Convert.ChangeType(toCast, typeof(double));
         }
 
