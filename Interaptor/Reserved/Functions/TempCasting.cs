@@ -2,7 +2,12 @@
 using System.Collections.Generic;
 namespace Interpreter.Reserved {
     partial class Functions {
-
+        public static object ArrayCast_Fu(SymbolTable s) {
+            int size= (int) s.GetValue(new Id("~size"));
+            OrderedPair pair = (OrderedPair)(s.GetValue(new Id("~pair")));
+            Reserved.Objects.ObjectArray arr = new Objects.ObjectArray(pair,size);
+            return arr;
+        }
         //casting
         public static object ListCast_Fu(SymbolTable s) {
             Opcodes p = s.GetValue(new Id("~items")) as Opcodes;

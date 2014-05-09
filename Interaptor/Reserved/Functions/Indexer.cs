@@ -5,8 +5,8 @@ namespace Interpreter.Reserved {
     partial class Functions {
         public static object Indexer_Fu(SymbolTable s) {
             int p = (int)s.GetValue(new Id("~index"));
-            IEnumerable<object> ls = (IEnumerable<object>)s.GetValue(new Id("~enums"));
-            return ls.ElementAt<object>(p);
+            Objects.ObjectArray arr = (Objects.ObjectArray)s.GetValue(new Id("~arr"));
+            return arr[p];
         }
     }
 }

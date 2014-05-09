@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Interpreter {
-    class ReturnObject {
+namespace Interpreter.Reserved {
+    public class ReturnObject {
         public ReturnObject(object toReturn) {
             this.toReturn = toReturn;
         }
@@ -13,7 +13,7 @@ namespace Interpreter {
         }
         public object toReturn;
     }
-    class Void:ReturnObject{
+    public class Void:ReturnObject{
         public Void() { 
         //this is a void object.
         }

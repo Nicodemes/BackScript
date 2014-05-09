@@ -22,7 +22,7 @@ namespace Interpreter {
         bool stopFlag = false;
         public object Return(SymbolTable s){
             stopFlag = true;
-            return new ReturnObject(s.GetValue(new Id("toReturn")));
+            return new Reserved.ReturnObject(s.GetValue(new Id("toReturn")));
         }
 
         //the new block that will be pushed into the stack after the closer
@@ -77,7 +77,8 @@ namespace Interpreter {
                         CallFunction(new Id("~indexer"));
                         break;
                     case Token.Type.Operator:
-                        ProcessOperator(t.lexema);
+                        
+                            ProcessOperator(t.lexema);
                         break;
                 
                     case Token.Type.FunctionCall:
@@ -90,7 +91,7 @@ namespace Interpreter {
                         pStack.Push(Double.Parse(t.lexema));
                         break;
                     case Token.Type.Integer:
-                        pStack.Push(Double.Parse(t.lexema));
+                        pStack.Push(Int32.Parse(t.lexema));
                         break;
                 
                     case Token.Type.IdHead:
@@ -113,6 +114,10 @@ namespace Interpreter {
         private void ProcessOperator(string op) {
             try {
                 switch (op) {
+                    case ",":
+                        object last=pStack.Pop();
+                        pStack.Push(new OrderedPair( pStack.Pop(), last));
+                        break;
                     case "<-":
                         exptFuCallFlag = true;
                         break;
@@ -137,7 +142,11 @@ namespace Interpreter {
                         newblock = new Opcodes();
                         break;
                     
-
+                    case "(":
+                        opBlockFlag = true;
+                        newblock = new Opcodes();
+                        break;
+                   
                     default: 
                         throw new Exception("invalid Operator");
                         break;
@@ -182,7 +191,7 @@ namespace Interpreter {
 #endif
             this.activeScope = this.activeScope.Perent;
             if (activeScope == null)
-                throw new Exception(" you are trying to scope out of the last scoup");
+                throw new Exception(" you are trying to scope out of the Last scoup");
 #if _DEBUG
             Console.WriteLine(" to scope " + this.ActiveScope);
 #endif
@@ -204,22 +213,15 @@ namespace Interpreter {
             int limit = funBlock.ParametersCount;
             //the parameters that will be passed to the function call
             List<object> parameters = new List<object>();
-#if _DEBUG
-            for (int i = 0; i < limit; i++) {
-                object toAdd = pStack.Pop();
-                Console.WriteLine("Poping parameter n" + i + " : " + toAdd);
-                parameters.Add(toAdd);
-            }
-                
-#else
+
             for (int i = 0; i < limit; i++)
-                parameters.Add(pStack.Pop());
-#endif
+                    parameters.Add(pStack.Pop());
+            
+
             Interpreter t = new Interpreter(this.ProcessStack, funBlock.GetCallSymbolTable(this.ActiveScope, parameters));
             t.activeScope.AddFunction("return", new SystemFunction(new RDelegate(t.Return)), "toReturn");
             funBlock.Executable.ExecuteByhInterpreter(t);
         }
-
         public override string ToString() {
             return "i@"+this.GetHashCode();
         }

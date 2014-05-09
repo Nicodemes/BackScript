@@ -94,9 +94,7 @@ namespace Interpreter {
                     case ' ':
                         BreakCarry();
                         break;
-                    case ',':
-                        BreakCarry();
-                        break;
+                    
                     case '\t':
                         BreakCarry();
                         break;
@@ -150,7 +148,28 @@ namespace Interpreter {
                         BreakCarry();
                         output.AddLast(new Token("}", Token.Type.Operator));
                         break;
-                    
+                    case ',':
+                        output.AddLast(new Token(",", Token.Type.Operator));
+                        BreakCarry();
+                       
+                        int count = 1;
+
+                        Next();
+                        while (input[start] == ',' || input[start] == '@' ) {
+                            if (input[start] == '@') {
+                                output.AddLast(new Token(""+count, Token.Type.Integer));
+                                output.AddLast(new Token("array", Token.Type.FunctionCall));
+                                break;
+                            }
+                            else {
+                                count++;
+                                output.AddLast(new Token(",", Token.Type.Operator));
+                            }
+                                Next();
+                            
+                        }
+                        break;
+
                     //indexer
                     case '[':
                         Next();

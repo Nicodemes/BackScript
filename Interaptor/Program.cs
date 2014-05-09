@@ -104,17 +104,12 @@ namespace Interpreter {
                 return environment.lexicalAnaliser.Tokenize();
         }
         //excecute a file .
-
-
-
-
         static void ExcecuteFile(string file) {
             System.IO.StreamReader myFile = new System.IO.StreamReader(file);
             string myString = myFile.ReadToEnd();
             myFile.Close();
             Execute(myString);
         }
-        
         static void Execute(string data) {
             LinkedList<object> tokens = null;
             try {

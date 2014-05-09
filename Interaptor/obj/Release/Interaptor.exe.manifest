@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Interaptor.exe" size="123904">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Interaptor.exe" size="125952">
       <assemblyIdentity name="Interaptor" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>WyoPbdNCrVBO5NSQwB3tpppKcQTm+xhnaAOh3XHqJ2k=</dsig:DigestValue>
+        <dsig:DigestValue>AjIUFcjSHJWBQOA4ft5zWv89H4HQmcloz8UACH0A38U=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

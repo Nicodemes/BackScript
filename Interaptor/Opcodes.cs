@@ -1,7 +1,7 @@
 ﻿//#define _DEBUG
 using System;
 using System.Collections.Generic;
-
+using Interpreter.Reserved;
 namespace Interpreter {
     class Opcodes : IExecutable {
         public LinkedList<object> ops;
@@ -57,7 +57,7 @@ namespace Interpreter {
                     if (!(toReturn is ReturnObject))
                         throw new Exception(" Return expeted");
                     //if it is , push it as reutned. if it is void, fo nothing.
-                    if (toReturn is Void)
+                    if (toReturn is Reserved.Void)
                          r.ProcessStack = perent;
                     else
                         perent.Push((toReturn as ReturnObject).toReturn);

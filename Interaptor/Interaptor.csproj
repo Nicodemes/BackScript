@@ -83,6 +83,8 @@
     <Compile Include="Opcodes.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="ITreeNode.cs" />
+    <Compile Include="Reserved\Objects\Array.cs" />
+    <Compile Include="Reserved\Objects\OrderedPair.cs" />
     <Compile Include="Program.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -106,7 +108,7 @@
     <Compile Include="Reserved\Functions\tmpl.cs" />
     <Compile Include="Registry.cs" />
     <Compile Include="SystemFunctions.cs" />
-    <Compile Include="Reserved\ReturnObject.cs" />
+    <Compile Include="Reserved\Objects\ReturnObject.cs" />
     <Compile Include="SymbolTable.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="Tokenizer.cs" />

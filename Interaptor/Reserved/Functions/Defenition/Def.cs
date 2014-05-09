@@ -24,8 +24,10 @@ namespace Interpreter.Reserved {
 
             //db
             Opcodes body = s.GetVariable(new Id("~body")) as Opcodes;
-            List<object> raw = s.GetValue(new Id("~paramList")) as List<object>;
-            List<string> param = raw.Select(k => (string)k).ToList();
+            object paramslot =s.GetValue(new Id("~paramList"));
+            if(paramslot is OrderedPair)
+            Objects.ObjectArray raw = ;
+            List<string> param = raw.arr.Select(k => (string)k).ToList();
 #if _DEBUG
             string toSay = "Defining new Function\n  name: " + name+"\n  params: ";
             foreach (var item in param) 
