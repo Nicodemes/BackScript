@@ -5,19 +5,18 @@ using System.IO;
 
 namespace Interpreter {
     class Program {
-        public static Interpreter interpreter;
-        static Tokenizer lexicalAnaliser;
-
+        public static Environment environment;
+        
         //flags
         static bool exefile = false;
-
         static bool readline = false;
         static bool interactivemode = false;
         static bool debugmode = false;
+        static bool icolorMode = false;//colored interactive mode
 
         static void Main(string[] args) {
-            interpreter = new Interpreter();
-            Registry rg = new Registry(interpreter.ActiveScope);
+            environment = new Environment();
+
             if (args.Length == 0){
                 interactivemode = true;
                 StartInteactiveMode();
@@ -51,7 +50,15 @@ namespace Interpreter {
                 case "--interactive":
                     StartInteactiveMode();
                     break;
-                
+                //set the ineractive color mode on
+                case "-c":
+                    icolorMode = true;
+                    break;
+                //set the ineractive color mode on
+                case "--color":
+                    icolorMode = true;
+                    break;
+
                 //don't close window after execution.
                 case "-r": readline = true;
                     break;
@@ -77,29 +84,13 @@ namespace Interpreter {
             LincesInfo();
             string input;
             while (true) {
-                
                 PrintBackScript();
                 input= Console.ReadLine();
                 if (input == "help") {
                     Help();
                     continue;
                 }
-                LinkedList<object> tokens = null;
-                try {
-                    
-                    try {
-                        lexicalAnaliser = new Tokenizer(input);
-                        tokens = lexicalAnaliser.Tokenize();
-                    }
-                    catch (Exception e) {throw new Exception("Syntax Error: " + e.Message);}
-
-                    try {interpreter.Process(tokens);}
-                    catch (Exception e) {throw new Exception("Interpritation Error: " + e.Message);}
-                }
-                catch (Exception e) {
-                    Console.WriteLine("  " + e.Message);
-                    interpreter.Reset();
-                }
+                Execute(input);
             }
         }
         //excecute a file .
@@ -107,21 +98,21 @@ namespace Interpreter {
             System.IO.StreamReader myFile = new System.IO.StreamReader(file);
             string myString = myFile.ReadToEnd();
             myFile.Close();
-            string row = myString;
+            Execute(myString);
+        }
+        
+        static void Execute(string data) {
             LinkedList<object> tokens = null;
             try {
                 try {
-                    lexicalAnaliser = new Tokenizer(row);
-                    tokens = lexicalAnaliser.Tokenize();
+                    environment.lexicalAnaliser = new Tokenizer(data);
+                    tokens = environment.lexicalAnaliser.Tokenize();
                 }
                 catch (Exception e) {
                     throw new Exception("Syntax Error: " + e.Message);
-                }/*
-                    foreach (Token item in tokens) {
-                    Console.WriteLine("[" + item.type + "] " + item.lexema);
-                    }*/
+                }
                 try {
-                    interpreter.Process(tokens);
+                    environment.interpreter.Process(tokens);
                 }
                 catch (Exception e) {
                     throw new Exception("Interpritation Error: " + e.Message);
@@ -130,7 +121,7 @@ namespace Interpreter {
             }
             catch (Exception e) {
                 Console.WriteLine("  " + e.Message);
-                interpreter.Reset();
+                environment.interpreter.Reset();
             }
         }
         //prints the help message
