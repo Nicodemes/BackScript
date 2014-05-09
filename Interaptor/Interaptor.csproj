@@ -72,16 +72,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Executable.cs" />
-    <Compile Include="Interaptor.cs" />
+    <Compile Include="IExecutable.cs" />
+    <Compile Include="Opcodes.cs" />
+    <Compile Include="Interpreter.cs" />
     <Compile Include="ITreeNode.cs" />
-    <Compile Include="MultiFileControler.cs" />
     <Compile Include="Program.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Id.cs" />
-    <Compile Include="ReturnObject.cs" />
+    <Compile Include="Reserved\Functions\Defenition\Be.cs" />
+    <Compile Include="Reserved\Functions\Eval.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Reserved\Functions\IO\WriteToFile.cs" />
+    <Compile Include="Reserved\Functions\Math\Add.cs" />
+    <Compile Include="Reserved\Functions\Console\Clear.cs" />
+    <Compile Include="Reserved\Functions\Defenition\Def.cs" />
+    <Compile Include="Reserved\Functions\TempCasting.cs" />
+    <Compile Include="Reserved\Functions\Console\ReadLine.cs" />
+    <Compile Include="Reserved\Functions\Indexer.cs" />
+    <Compile Include="Reserved\Functions\IO\ReadFile.cs" />
+    <Compile Include="Reserved\Functions\Console\Print.cs" />
+    <Compile Include="Reserved\Functions\ProccesStack\Pop.cs" />
+    <Compile Include="Reserved\Functions\ProccesStack\Peak.cs" />
+    <Compile Include="Reserved\Functions\tmpl.cs" />
+    <Compile Include="Registry.cs" />
+    <Compile Include="SystemFunctions.cs" />
+    <Compile Include="Reserved\ReturnObject.cs" />
     <Compile Include="SymbolTable.cs" />
     <Compile Include="Token.cs" />
     <Compile Include="Tokenizer.cs" />

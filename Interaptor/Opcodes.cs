@@ -1,11 +1,8 @@
-﻿#define _DEBUG
+﻿//#define _DEBUG
 using System;
 using System.Collections.Generic;
 
 namespace Interpreter {
-    interface IExecutable {
-        void ExecuteByhInterpreter(Interpreter machine);
-    }
     class Opcodes : IExecutable {
         public LinkedList<object> ops;
 
@@ -70,21 +67,6 @@ namespace Interpreter {
                 }
                 
             }
-        }
-    }
-    class ReservedFunction: IExecutable {
-
-        public delegate object ReservedFuncDelegate(SymbolTable tble);
-
-        ReservedFuncDelegate toDo;
-
-        public ReservedFunction(ReservedFuncDelegate toDo) {
-            this.toDo = toDo;
-        }
-
-        public void ExecuteByhInterpreter(Interpreter machine){
-            //Console.WriteLine("Executing with table " + tble.GetHashCode());
-            machine.ProcessStack.Push(toDo(machine.ActiveScope));
         }
     }
 }

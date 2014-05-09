@@ -1,4 +1,4 @@
-﻿#define _DEBUG
+﻿//#define _DEBUG
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Interpreter {
     //foo {"a"}<-list {a 1 + <PrintL; } <-function
-    class Interpreter {
+    public class Interpreter {
         Stack<object> pStack;
         SymbolTable activeScope;
         public Stack<object> ProcessStack { get { return pStack; } set { this.pStack = value; } }
@@ -216,7 +216,7 @@ namespace Interpreter {
                 parameters.Add(pStack.Pop());
 #endif
             Interpreter t = new Interpreter(this.ProcessStack, funBlock.GetCallSymbolTable(this.ActiveScope, parameters));
-            t.activeScope.AddFunction("return", new ReservedFunction(new ReservedFunction.ReservedFuncDelegate(t.Return)), "toReturn");
+            t.activeScope.AddFunction("return", new SystemFunction(new RDelegate(t.Return)), "toReturn");
             funBlock.Executable.ExecuteByhInterpreter(t);
         }
 

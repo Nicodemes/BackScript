@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace Interpreter {
-    class Id {
+    public class Id {
         public LinkedList<string> Path { get; set; }
         public string Head { get { return Path.First.Value; } }
         public Id(string head) {

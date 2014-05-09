@@ -1,11 +1,11 @@
-﻿#define _DEBUG
+﻿//#define _DEBUG
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 namespace Interpreter {
-    class SymbolTable :ITreeNode {
+    public class SymbolTable :ITreeNode {
 
         public SymbolTable Perent { get; set; }
 
