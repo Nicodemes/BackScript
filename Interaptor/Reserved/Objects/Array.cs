@@ -7,9 +7,13 @@ using System.Threading.Tasks;
 namespace Interpreter.Reserved.Objects {
     class ObjectArray {
         public object[] arr;
+        public ObjectArray(OrderedPair pair) {
+            this.arr = GetArray(pair, new object[pair.Count],0);
+        }
         public ObjectArray(OrderedPair pair, int size) {
             arr = GetArray(pair, new object[size], 0);
         }
+        
         public static object[] GetArray(OrderedPair pair, object[] arr , int from) {
             if (from >= arr.Length)
                 return arr;

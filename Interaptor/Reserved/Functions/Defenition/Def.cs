@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define _DEBUG
+using System;
 using System.Collections.Generic;
 using System.Linq;
 namespace Interpreter.Reserved {
@@ -24,18 +25,20 @@ namespace Interpreter.Reserved {
 
             //db
             Opcodes body = s.GetVariable(new Id("~body")) as Opcodes;
-            object paramslot =s.GetValue(new Id("~paramList"));
-            if(paramslot is OrderedPair)
-            Objects.ObjectArray raw = ;
-            List<string> param = raw.arr.Select(k => (string)k).ToList();
+            Objects.Arguments arguments;
+            try {
+                 arguments = (Objects.Arguments)s.GetValue(new Id("~args"));
+            }
+            catch {
+                throw new Exception("you can not place none arguments in here");
+            }
+
 #if _DEBUG
             string toSay = "Defining new Function\n  name: " + name+"\n  params: ";
-            foreach (var item in param) 
-                toSay += item;
             
             Console.WriteLine(toSay);
 #endif
-            s.Perent.AddFunction(name, body, param);
+            s.Perent.AddFunction(name, body, arguments.args);
             return new Void();
         }
     }

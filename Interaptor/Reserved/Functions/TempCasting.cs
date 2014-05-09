@@ -39,6 +39,27 @@ namespace Interpreter.Reserved {
             object toCast = s.GetValue(new Id("~toCast"));
             return Convert.ChangeType(toCast, typeof(double));
         }
-
+        public static object ArgumentCast_Fu(SymbolTable s) {
+            object toCast = s.GetVariable(new Id("~toCast"));
+            List<string> param = new List<string>();
+            if (toCast is OrderedPair) {
+                Objects.ObjectArray raw = new Objects.ObjectArray((OrderedPair)toCast);
+                foreach (Object ob in raw.arr) {
+                    if (!(ob is Id))
+                        throw new Exception("you can not give arguments that they are not id");
+                    if ((ob as Id).Length > 1)
+                        throw new Exception("the id must be 1 scope long");
+                    param.Add(ob.ToString());
+                }
+            }
+            else {
+                if (!(toCast is Id))
+                    throw new Exception("you can not give arguments that they are not id");
+                if ((toCast as Id).Length > 1)
+                    throw new Exception("the id must be 1 scope long");
+                param.Add(toCast.ToString());
+            }
+            return new Objects.Arguments(param);
+        }
     }
 }
