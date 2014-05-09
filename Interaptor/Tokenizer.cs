@@ -144,6 +144,10 @@ namespace Interpreter {
                         BreakCarry();
                         output.AddLast(new Token("-", Token.Type.Operator));
                         break;
+                    case '=':
+                        BreakCarry();
+                        output.AddLast(new Token("=", Token.Type.Operator));
+                        break;
                     case '*':
                         BreakCarry();
                         output.AddLast(new Token("*", Token.Type.Operator));

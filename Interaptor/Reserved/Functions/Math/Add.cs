@@ -7,10 +7,23 @@ namespace Interpreter.Reserved {
             object a = s.GetValue(new Id("~a"));
             object b = s.GetValue(new Id("~b"));
             try {
-                return (double)a + (double)b;
+                
+                return (int)a + (int)b;
             }
             catch {
-                throw new Exception("you cannot add " + a.GetType() + " and " + b.GetType());
+                try {
+
+                    return (double)a + (double)b;
+                }
+                catch {
+                    try {
+
+                        return (string)b + (string)a;
+                    }
+                    catch {
+                        throw new Exception("you cannot add " + a.GetType() + " and " + b.GetType());
+                    }
+                }
             }
         }
     }

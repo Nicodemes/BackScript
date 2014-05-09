@@ -10,8 +10,12 @@ namespace Interpreter.Reserved {
                 throw new Exception("invalid ID");
             string name = (s.GetVariable(new Id("~id")) as Id).ToString();
             object value = s.GetValue(new Id("~value"));
-
-            s.Perent.AddVariable(name, value);
+            try {
+                s.Perent.AddVariable(name, value);
+            }
+            catch { 
+                s.Perent.SetVariable((s.GetVariable(new Id("~id")) as Id),value);
+            }
             //Console.WriteLine("variable \"" + name + "\" has been assigend with the value \"" +value.ToString() +"\"");
             return s.GetVariable(new Id("~id"));
         }

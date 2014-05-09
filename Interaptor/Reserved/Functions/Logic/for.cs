@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 namespace Interpreter.Reserved {
     partial class Functions {
-        public static object Else_Fu(SymbolTable s) {
+        public static object For_Fu(SymbolTable s) {
             Opcodes body;
-            bool boolean;
+            int n;
             try {
                 body = (Opcodes)s.GetValue(new Id("~body"));
             }
@@ -12,19 +12,17 @@ namespace Interpreter.Reserved {
                 throw new Exception("body expected");
             }
             try {
-                boolean = (bool)s.GetValue(new Id("~bool"));
+                n = (int)s.GetValue(new Id("~int"));
             }
             catch {
                 throw new Exception("boolean value expected");
             }
-            if (!boolean) {
-                body.ExecuteByhInterpreter(new Interpreter(new Stack<object>(), Program.environment.interpreter.ActiveScope.GetNewAnonymicScope()));
-                return false;
+            SymbolTable scope = Program.environment.interpreter.ActiveScope.GetNewAnonymicScope();
+            Stack<object> stck = new Stack<object>();
+           for (int i = 0; i < n; i++){
+                body.ExecuteByhInterpreter(new Interpreter(stck, scope));
             }
-            else {
-                return true;
-            }
-
+            return new Void();
         }
     }
 }

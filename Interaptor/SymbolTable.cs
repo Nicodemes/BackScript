@@ -1,4 +1,4 @@
-﻿#define _DEBUG
+﻿//#define _DEBUG
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -110,7 +110,7 @@ namespace Interpreter {
          *  }
          * }
          */
-        public SymbolTable AddNewAnonymicScope() {
+        public SymbolTable GetNewAnonymicScope() {
             return new SymbolTable(this);
         }
         public override string ToString() {

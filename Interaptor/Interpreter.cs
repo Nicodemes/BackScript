@@ -1,4 +1,4 @@
-﻿#define _DEBUG
+﻿//#define _DEBUG
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -141,7 +141,7 @@ namespace Interpreter {
                         pStack = new Stack<object>();
                         break;
                     case "=":
-                        CallFunction(new Id("Be"));
+                        CallFunction(new Id("Def"));
                         break;
                     case "{":
                         opBlockFlag = true;

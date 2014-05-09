@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Interpreter;
 namespace Interpreter.Reserved {
     partial class Functions {
-        public static object If_Fu(SymbolTable s) { 
+        public static object While_Fu(SymbolTable s) { 
             Opcodes body;
             bool boolean ;
             try{
@@ -17,14 +17,12 @@ namespace Interpreter.Reserved {
             catch {
                 throw new Exception("boolean value expected");
             }
-            if (boolean) {
-                body.ExecuteByhInterpreter(new Interpreter(new Stack<object>(), Program.environment.interpreter.ActiveScope.GetNewAnonymicScope()));
-                return true;
+            SymbolTable scope = Program.environment.interpreter.ActiveScope.GetNewAnonymicScope();
+            Stack<object> stck=new Stack<object>();
+            while (boolean) {
+                body.ExecuteByhInterpreter(new Interpreter(stck, scope));
             }
-            else {
-                return false;
-            }
-
+            return new Void();
         }
         
     }
