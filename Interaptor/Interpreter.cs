@@ -106,6 +106,12 @@ namespace Interpreter {
                         Id before = (Id)pStack.Peek();
                         before.AddPath(t.lexema);
                         break;
+                    case Token.Type.Boolean:
+                        if (t.lexema[0] == 't')//==true
+                            pStack.Push(true);
+                        else
+                            pStack.Push(false);
+                        break;
                     case Token.Type.EOS:
                         break;
                 }

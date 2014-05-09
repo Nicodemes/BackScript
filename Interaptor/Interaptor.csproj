@@ -83,6 +83,8 @@
     <Compile Include="Opcodes.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="ITreeNode.cs" />
+    <Compile Include="Reserved\Functions\Logic\else.cs" />
+    <Compile Include="Reserved\Functions\Logic\if.cs" />
     <Compile Include="Reserved\Objects\Arguments.cs" />
     <Compile Include="Reserved\Objects\Array.cs" />
     <Compile Include="Reserved\Objects\OrderedPair.cs" />

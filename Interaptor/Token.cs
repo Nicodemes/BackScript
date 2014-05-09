@@ -23,6 +23,7 @@ namespace Interpreter {
             Operator,
             EOS,
             Indexer,
+            Boolean,
         }
     }
 }

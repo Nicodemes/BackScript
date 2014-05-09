@@ -33,6 +33,8 @@ namespace Interpreter {
                 new F(new RDelegate(Functions.DefMethod_Fu)   ,"function","~body","~args","~id"),
                 new F(new RDelegate(Functions.ArrayCast_Fu)   ,"array","~size","~pair"),
                 new F(new RDelegate(Functions.ArgumentCast_Fu),"args","~toCast"),
+                new F(new RDelegate(Functions.If_Fu)          ,"if","~body","~bool"),
+                new F(new RDelegate(Functions.Else_Fu)          ,"else","~body","~bool"),
             };
             foreach (F i in toAdd) {
                 this.Import(i.dle, i.name, i.parameters);

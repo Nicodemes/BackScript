@@ -71,6 +71,18 @@ namespace Interpreter {
         
         public LinkedList<object> Tokenize() {
             while (start < end) {
+                //bolleans
+                if (ReadFrom(input, start, "true")) {
+                    start += 4;
+                    this.output.AddLast(new Token("true", Token.Type.Boolean));
+                    continue;
+                }
+                if (ReadFrom(input, start, "false")) {
+                    start += 5;
+                    this.output.AddLast(new Token("false", Token.Type.Boolean));
+                    continue;
+                }
+                
                 char cur = input[start];
                 
                 //number literals
@@ -239,12 +251,15 @@ namespace Interpreter {
             return output;
         }
         public static LinkedList<Token> TokenizeOld (string input,int start, int end){
+            
+            
             LinkedList<Token> output=new LinkedList<Token>();
             string carry="";
             //end of stream carry is an emty carry.
             Token.Type carryType= Token.Type.EOS;
 
             while (start < end) {
+
                 switch(input[start]){
                     //escape charecter
                     case '[':
@@ -500,6 +515,21 @@ namespace Interpreter {
             output.AddLast(new Token("$", Token.Type.EOS));
             return output;
         }
-        
+        public static bool ReadFrom(string input, int index, string word) {
+            try {
+                int j = 0;
+                for (int i = index; i < word.Length; i++,j++) {
+                    if (input[i] != word[j])
+                        break;
+                }
+                if (j == word.Length)
+                    return true;
+            }
+            catch {
+                return false;
+            }
+            return false;
+        }
+
     }
 }
