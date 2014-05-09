@@ -74,6 +74,12 @@
   <ItemGroup>
     <Compile Include="Environment.cs" />
     <Compile Include="IExecutable.cs" />
+    <Compile Include="InteractiveColorMode\ColorMode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InteractiveColorMode\Syle.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Opcodes.cs" />
     <Compile Include="Interpreter.cs" />
     <Compile Include="ITreeNode.cs" />

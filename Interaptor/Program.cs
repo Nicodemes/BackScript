@@ -85,7 +85,10 @@ namespace Interpreter {
             string input;
             while (true) {
                 PrintBackScript();
-                input= Console.ReadLine();
+                if (!icolorMode)
+                    input = Console.ReadLine();
+                else
+                    input = InteractiveColorMode.ColorMode.ColoredReadLine();
                 if (input == "help") {
                     Help();
                     continue;
@@ -93,7 +96,18 @@ namespace Interpreter {
                 Execute(input);
             }
         }
+        //highlites the lines as the users types.
+
+       
+        public static LinkedList<object> Tt(string s) {
+                environment.lexicalAnaliser = new Tokenizer(s);
+                return environment.lexicalAnaliser.Tokenize();
+        }
         //excecute a file .
+
+
+
+
         static void ExcecuteFile(string file) {
             System.IO.StreamReader myFile = new System.IO.StreamReader(file);
             string myString = myFile.ReadToEnd();
@@ -104,20 +118,10 @@ namespace Interpreter {
         static void Execute(string data) {
             LinkedList<object> tokens = null;
             try {
-                try {
-                    environment.lexicalAnaliser = new Tokenizer(data);
-                    tokens = environment.lexicalAnaliser.Tokenize();
-                }
-                catch (Exception e) {
-                    throw new Exception("Syntax Error: " + e.Message);
-                }
-                try {
-                    environment.interpreter.Process(tokens);
-                }
-                catch (Exception e) {
-                    throw new Exception("Interpritation Error: " + e.Message);
-
-                }
+                try {tokens = Tt(data);}
+                catch (Exception e) {throw new Exception("Syntax Error: " + e.Message);}
+                try {environment.interpreter.Process(tokens);}
+                catch (Exception e) {throw new Exception("Interpritation Error: " + e.Message);}
             }
             catch (Exception e) {
                 Console.WriteLine("  " + e.Message);
