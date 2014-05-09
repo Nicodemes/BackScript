@@ -2,7 +2,7 @@
 namespace Interpreter.Reserved{
     partial class Functions {
         //assigens value to variable
-        public static object Be_Fu(SymbolTable s) {
+        public static object Be_Fu(Interpreter m) {
             if (!(s.GetVariable(new Id("~id")) is Id))
                 throw new Exception("invalid ID");
             Id name = (s.GetVariable(new Id("id")) as Id);

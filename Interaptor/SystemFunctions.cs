@@ -10,8 +10,8 @@ namespace Interpreter {
         }
         public void ExecuteByhInterpreter(Interpreter machine) {
             //Console.WriteLine("Executing with table " + tble.GetHashCode());
-            machine.ProcessStack.Push(toDo(machine.ActiveScope));
+            machine.ProcessStack.Push(toDo(machine));
         }
     }
-    public delegate object RDelegate(SymbolTable tble);
+    public delegate object RDelegate(Interpreter machine);
 }

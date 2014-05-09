@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 namespace Interpreter.Reserved {
     partial class Functions {
-        static object Eval_Fu(SymbolTable s) {
+        static object Eval_Fu(Interpreter m) {
 
             Interpreter raptor = new Interpreter(new Stack<object>(), s);
             
