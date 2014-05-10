@@ -19,37 +19,35 @@ namespace Interpreter.InteractiveColorMode {
         public static string ColoredReadLine() {
             string input = "";
             ConsoleKeyInfo ch = new ConsoleKeyInfo();
-            int count = 0;
+            int count =1;
 
             while (ch.Key != ConsoleKey.Enter) {
-                
                 ch = Console.ReadKey();
                 if (ch.Key != ConsoleKey.Enter) {
                     input += ch.KeyChar;
-                    try {
-                        DrawTokens(Program.Tt(input), count);
-                    }
-                    catch {
-                        //do nothing,
-                    }
+                    DrawTokens(Program.Tt(input), count);
                 }
-                
+                count++;
             }
             return input;
         }
         static void DrawTokens(LinkedList<object> t, int count){
             for (int i = 0; i < count; i++)
                 Console.Write("\b");
-            foreach (LinkedListNode<object> token in t) {
-                if (token.Value is Token) {
-                    switch((token.Value as Token).type){
+            foreach (object token in t) {
+                if (token is Token) {
+                    Console.Write(" ");
+                    switch((token as Token).type){
+                        case Token.Type.IdSingle:
+                            WriteWithStyle((token as Token).lexema, styles[1]); break;
                         case Token.Type.Operator:
-                            WriteWithStyle( (token.Value as Token).lexema,styles[1]);break;
+                            WriteWithStyle( (token as Token).lexema,styles[1]);break;
                         case Token.Type.String:
-                            WriteWithStyle("\""+ (token.Value as Token).lexema+"\"",styles[2]); break;
+                            WriteWithStyle("\""+ (token as Token).lexema+"\"",styles[2]); break;
                         default :
-                            WriteWithStyle((token.Value as Token).lexema,styles[0]); break;
+                            WriteWithStyle((token as Token).lexema,styles[0]); break;
                     }
+                    Console.Write(" ");
                 }
                 else { 
                 //TODO:this
