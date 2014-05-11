@@ -23,6 +23,9 @@ namespace Interpreter {
             return (Token)output.First.Value;
         }
         char LookAhead() {
+            int next=start+1;
+            if (next >= input.Length)
+                return '$';
             return input[start+1];
         }
         void Next() {
@@ -144,10 +147,6 @@ namespace Interpreter {
                         BreakCarry();
                         output.AddLast(new Token("-", Token.Type.Operator));
                         break;
-                    case '=':
-                        BreakCarry();
-                        output.AddLast(new Token("=", Token.Type.Operator));
-                        break;
                     case '*':
                         BreakCarry();
                         output.AddLast(new Token("*", Token.Type.Operator));
@@ -156,6 +155,52 @@ namespace Interpreter {
                         BreakCarry();
                         output.AddLast(new Token("/", Token.Type.Operator));
                         break;
+                    
+                    case '=':
+                        BreakCarry();
+                        //check if the next charecter is = , if it is, that is mean that this is an boolean operator.
+                        if (LookAhead() == "=") {
+                            output.AddLast(new Token("==", Token.Type.Operator));
+                            Next();
+                        }
+                        else
+                            output.AddLast(new Token("=", Token.Type.Operator));
+                        break;
+                    case '!':
+                        BreakCarry();
+                        //NOT boolean operator.
+                        output.AddLast(new Token("!", Token.Type.Operator));
+                        break;
+                    case '|':
+                        BreakCarry();
+                        //OR boolean operator
+                        if (LookAhead() == "|"){
+                            output.AddLast(new Token("||", Token.Type.Operator));
+                            Next();
+                        }
+                        //OR  operator.
+                        else
+                            output.AddLast(new Token("|", Token.Type.Operator));
+                        
+                        break;
+                    case '^':
+                        BreakCarry();
+                        //XOR boolean operator
+                        output.AddLast(new Token("^", Token.Type.Operator));
+                        break;
+                    case '&':
+                        BreakCarry();
+                        //AND boolean operator
+                        if (LookAhead() == "&"){
+                            output.AddLast(new Token("&&", Token.Type.Operator));
+                            Next();
+                        }
+                        //And operator.
+                        else
+                            output.AddLast(new Token("&", Token.Type.Operator));
+                            break;
+                    
+                   
                     case '{':
                         BreakCarry();
                         output.AddLast(new Token("{", Token.Type.Operator));
@@ -164,6 +209,7 @@ namespace Interpreter {
                         BreakCarry();
                         output.AddLast(new Token("}", Token.Type.Operator));
                         break;
+                    
                     case ',':
                         output.AddLast(new Token(",", Token.Type.Operator));
                         BreakCarry();
@@ -237,11 +283,31 @@ namespace Interpreter {
                     //function call
                     case '<':
                         BreakCarry();
-                        if(LookAhead()=='-')
+                        char lookAhead=LookAhead();
+                        //boolean operator
+                        if (lookAhead == '<'){
+                            output.AddLast(new Token("<<", Token.Type.Operator));
                             Next();
-                       output.AddLast(new Token("<-", Token.Type.Operator));
-                       BreakCarry();
+                        }
+                        else{
+                            if (lookAhead == '-')
+                                Next();
+                            
+                            //function call operator.
+                            output.AddLast(new Token("<-", Token.Type.Operator));
+                            BreakCarry();
+                        }
                        break;
+                    case '>':
+                       BreakCarry();
+                        if(LookAhead()!='>')
+                            throw new Exception("Invalid operator >, must be followed by >");
+                        Next();
+                        output.AddLast(new Token(">>", Token.Type.Operator));
+                    
+                    case '~':
+                       throw new Exception("Reserved Operator used!");
+                    
                     //default
                     default:
                         if(carryType==Token.Type.EOS)
