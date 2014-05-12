@@ -283,11 +283,31 @@ namespace Interpreter {
                     //function call
                     case '<':
                         BreakCarry();
-                        if(LookAhead()=='-')
+                        char lookAhead=LookAhead();
+                        //boolean operator
+                        if (lookAhead == '<'){
+                            output.AddLast(new Token("<<", Token.Type.Operator));
                             Next();
-                       output.AddLast(new Token("<-", Token.Type.Operator));
-                       BreakCarry();
+                        }
+                        else{
+                            if (lookAhead == '-')
+                                Next();
+                            
+                            //function call operator.
+                            output.AddLast(new Token("<-", Token.Type.Operator));
+                            BreakCarry();
+                        }
                        break;
+                    case '>':
+                       BreakCarry();
+                        if(LookAhead()!='>')
+                            throw new Exception("Invalid operator >, must be followed by >");
+                        Next();
+                        output.AddLast(new Token(">>", Token.Type.Operator));
+                    
+                    case '~':
+                       throw new Exception("Reserved Operator used!");
+                    
                     //default
                     default:
                         if(carryType==Token.Type.EOS)
