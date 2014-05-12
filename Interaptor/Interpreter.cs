@@ -120,13 +120,17 @@ namespace Interpreter {
         private void ProcessOperator(string op) {
             try {
                 switch (op) {
+                    //ordered pair operator.
                     case ",":
                         object last=pStack.Pop();
                         pStack.Push(new OrderedPair( pStack.Pop(), last));
                         break;
+                    //function call operator.
                     case "<-":
                         exptFuCallFlag = true;
                         break;
+
+                    //math operators.
                     case "+":
                         CallFunction(new Id("Add"));
                         break;
@@ -137,20 +141,50 @@ namespace Interpreter {
                     case "*":
                         pStack.Push((double)pStack.Pop() * (double)pStack.Pop());
                         break;
+                    
+                    //empty stack operator.
                     case ";":
                         pStack = new Stack<object>();
                         break;
+                    //Def operator.
                     case "=":
                         CallFunction(new Id("Def"));
                         break;
+                    //opcodes operator.
                     case "{":
                         opBlockFlag = true;
                         newblock = new Opcodes();
                         break;
                     
-                    case "(":
-                        opBlockFlag = true;
-                        newblock = new Opcodes();
+                    //boolean operators.
+                    case "==":
+                        pStack.Push(pStack.Pop() == pStack.Pop());
+                        break;
+                    case "&&":
+                        pStack.Push(pStack.Pop() && pStack.Pop());
+                        break;
+                    case "||":
+                        pStack.Push(pStack.Pop() || pStack.Pop());
+                        break;
+                    case ">>":
+                        pStack.Push(pStack.Pop() < pStack.Pop());
+                        break;
+                    case "<<":
+                        pStack.Push(pStack.Pop() > pStack.Pop());
+                        break;
+                    case "!":
+                        pStack.Push(!pStack.Pop());
+                        break;
+                    
+                    //AND OR XOR
+                    case "&":
+                        pStack.Push(pStack.Pop() & pStack.Pop());
+                        break;
+                    case "|":
+                        pStack.Push(pStack.Pop() | pStack.Pop());
+                        break;
+                    case "^":
+                        pStack.Push(pStack.Pop() ^ pStack.Pop());
                         break;
                    
                     default: 
