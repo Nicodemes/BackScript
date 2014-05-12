@@ -1,4 +1,5 @@
 ﻿//#define _DEBUG
+//#define _ELPASE
 using System;
 using System.Collections.Generic;
 using System.IO;
