@@ -106,6 +106,9 @@ namespace Interpreter {
                 
                 switch (cur) {
                     //saperators
+                    case '$':
+                        BreakCarry();
+                        break;
                     case ' ':
                         BreakCarry();
                         break;
@@ -159,7 +162,7 @@ namespace Interpreter {
                     case '=':
                         BreakCarry();
                         //check if the next charecter is = , if it is, that is mean that this is an boolean operator.
-                        if (LookAhead() == "=") {
+                        if (LookAhead() == '=') {
                             output.AddLast(new Token("==", Token.Type.Operator));
                             Next();
                         }
@@ -174,7 +177,7 @@ namespace Interpreter {
                     case '|':
                         BreakCarry();
                         //OR boolean operator
-                        if (LookAhead() == "|"){
+                        if (LookAhead() == '|'){
                             output.AddLast(new Token("||", Token.Type.Operator));
                             Next();
                         }
@@ -191,11 +194,10 @@ namespace Interpreter {
                     case '&':
                         BreakCarry();
                         //AND boolean operator
-                        if (LookAhead() == "&"){
+                        if (LookAhead() == '&'){
                             output.AddLast(new Token("&&", Token.Type.Operator));
                             Next();
                         }
-                        //And operator.
                         else
                             output.AddLast(new Token("&", Token.Type.Operator));
                             break;
@@ -304,7 +306,7 @@ namespace Interpreter {
                             throw new Exception("Invalid operator >, must be followed by >");
                         Next();
                         output.AddLast(new Token(">>", Token.Type.Operator));
-                    
+                        break;
                     case '~':
                        throw new Exception("Reserved Operator used!");
                     
@@ -588,7 +590,7 @@ namespace Interpreter {
         public static bool ReadFrom(string input, int index, string word) {
             try {
                 int j = 0;
-                for (int i = index; i < word.Length; i++,j++) {
+                for (int i = index; j < word.Length; i++,j++) {
                     if (input[i] != word[j])
                         break;
                 }

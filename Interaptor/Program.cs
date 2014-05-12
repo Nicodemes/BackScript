@@ -22,11 +22,12 @@ namespace Interpreter {
                 StartInteactiveMode();
                 return;
             }
+            ExcecuteFile(args[0]);
             //process arguments
             for (int i = 0; i < args.Length; i++)
                 Arguments(args[i]);
             if(exefile){ 
-                ExcecuteFile(args[0]);
+                
                 if (readline)
                 Console.ReadLine();
             }   
@@ -93,6 +94,9 @@ namespace Interpreter {
                     Help();
                     continue;
                 }
+                if (input == "<exit")
+                    break;
+                
                 Execute(input);
             }
         }

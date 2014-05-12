@@ -158,34 +158,28 @@ namespace Interpreter {
                     
                     //boolean operators.
                     case "==":
-                        pStack.Push(pStack.Pop() == pStack.Pop());
+                        pStack.Push(pStack.Pop().Equals(pStack.Pop()));
                         break;
                     case "&&":
-                        pStack.Push(pStack.Pop() && pStack.Pop());
+                        object a =pStack.Pop();
+                        object b =pStack.Pop();
+                        pStack.Push((bool)a && (bool)b);
                         break;
                     case "||":
-                        pStack.Push(pStack.Pop() || pStack.Pop());
+                        pStack.Push((bool)pStack.Pop() || (bool)pStack.Pop());
                         break;
                     case ">>":
-                        pStack.Push(pStack.Pop() < pStack.Pop());
+                        pStack.Push(Compare(pStack.Pop(), pStack.Pop(),false));
                         break;
                     case "<<":
-                        pStack.Push(pStack.Pop() > pStack.Pop());
+                        pStack.Push(Compare(pStack.Pop(), pStack.Pop(), true));
                         break;
                     case "!":
-                        pStack.Push(!pStack.Pop());
+                        pStack.Push(!(bool)pStack.Pop());
                         break;
                     
                     //AND OR XOR
-                    case "&":
-                        pStack.Push(pStack.Pop() & pStack.Pop());
-                        break;
-                    case "|":
-                        pStack.Push(pStack.Pop() | pStack.Pop());
-                        break;
-                    case "^":
-                        pStack.Push(pStack.Pop() ^ pStack.Pop());
-                        break;
+                    
                    
                     default: 
                         throw new Exception("invalid Operator");
@@ -196,7 +190,17 @@ namespace Interpreter {
                 throw new Exception("Noth enoth openders to continue the operation");
             }
         }
+        public bool Compare(object a, object b, bool isAbigger) {
+            if (!(a is IComparable && b is IComparable))
+                throw new Exception("a or b are not comparable");
+            IComparable A = a as IComparable;
+            IComparable B = b as IComparable;
+            if (isAbigger)
+                return (A.CompareTo(B) > 0);
+            return (B.CompareTo(A) > 0);
 
+        }
+        
         void ExcpectFunctionCall(Token t) {
             if (t.type == Token.Type.IdSingle) {
                 CallFunction(new Id(t.lexema));
@@ -265,6 +269,8 @@ namespace Interpreter {
         public override string ToString() {
             return "i@"+this.GetHashCode();
         }
+
+       
     }
     
 }

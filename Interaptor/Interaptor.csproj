@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Interpreter</RootNamespace>
-    <AssemblyName>Interaptor</AssemblyName>
+    <AssemblyName>interpreter</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -60,7 +60,10 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>shell-script-icone-9839-128.ico</ApplicationIcon>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -140,7 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Debug\Interaptor.exe" />
-    <Content Include="shell-script-icone-9839-128.ico" />
+    <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Release\" />
