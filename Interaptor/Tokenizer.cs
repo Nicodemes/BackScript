@@ -4,38 +4,44 @@ using System.Collections.Generic;
 
 namespace Interpreter {
     class Tokenizer {
-        /*
-        public static void Main() {
-            string inr = Console.ReadLine();
-            Tokenizer obj = new Tokenizer(inr);
-            LinkedList<Token> output = obj.Tokenize();
-            foreach (Token i in output)
-                Console.WriteLine("[" + i.type + "] " + i.lexema);
-            Console.ReadLine();
-        }*/
+        //the input of the tokenizer
         string input;
+        //the output of the tokenizer. aka the tokens
         LinkedList<object> output;
 
+        //from where we should scan a  string.
         int start;
         int end;
         
+        //carry things
+        string carry;
+        Token.Type carryType;
+
+        //constructor
+        public Tokenizer(string input) {
+            start = 0;
+            end = input.Length;
+            this.output = new LinkedList<object>();
+            this.input = input;
+            this.carry = "";
+            carryType = Token.Type.EOS;
+        }
+
+        //input navigation
         Token LookBack() {
             return (Token)output.First.Value;
         }
         char LookAhead() {
-            int next=start+1;
+            int next = start + 1;
             if (next >= input.Length)
                 return '$';
-            return input[start+1];
+            return input[start + 1];
         }
         void Next() {
             start++;
         }
 
-
-        string carry;
-        Token.Type carryType;
-
+        //these methods used to switch the carry type and insert into the input the current carry
         void BreakCarry(){
             if (carryType == Token.Type.EOS) 
                 return;
@@ -63,15 +69,7 @@ namespace Interpreter {
             carryType = with;
         }
 
-        public Tokenizer(string input) {
-            start = 0;
-            end = input.Length;
-            this.output = new LinkedList<object>();
-            this.input = input;
-            this.carry = "";
-            carryType = Token.Type.EOS;
-        }
-        
+       //the function that converts the iinput string into tokens
         public LinkedList<object> Tokenize() {
             while (start < end) {
                 //bolleans
@@ -322,271 +320,8 @@ namespace Interpreter {
             BreakCarry();
             return output;
         }
-        public static LinkedList<Token> TokenizeOld (string input,int start, int end){
-            
-            
-            LinkedList<Token> output=new LinkedList<Token>();
-            string carry="";
-            //end of stream carry is an emty carry.
-            Token.Type carryType= Token.Type.EOS;
 
-            while (start < end) {
-
-                switch(input[start]){
-                    //escape charecter
-                    case '[':
-                        if (carryType == Token.Type.String)
-                            carry += '[';
-                        else if (carryType != Token.Type.EOS) {
-                            output.AddLast(new Token(carry, carryType));
-                            carry = "";
-                            carryType = Token.Type.EOS;
-                        }
-                        string carry2 = "";
-                        while (start < end) {
-                            start++;
-                            if (input[start] != ']')
-                                carry2 += input[start];
-                            else {
-                                output.AddLast(new Token(carry2, Token.Type.Indexer));
-                                break;
-                            }       
-                        }
-                        break;
-                    case '\\':
-                        if (carryType != Token.Type.String)
-                            throw new Exception("escape char outside of a string defention");
-                        start++;
-                        if (start >= end)
-                            throw new Exception("end of string toosoon");
-
-                        switch(input[start]){
-                            case 'n':
-                                carry += '\n';
-                                break;
-                            case 't':
-                                carryType += '\t';
-                                break;
-                            case '\"':
-                                carryType += '\"';
-                                break;
-                            case '\'':
-                                carryType += '\'';
-                                break;
-                            default:
-                                throw new Exception("unrecognized charecter after escape charecter");
-                                
-
-                        }
-                        break;
-                    case '\n':
-                         if (carryType != Token.Type.String) {
-                            if (carryType == Token.Type.FunctionCall && ((carry == "") || (carry == "<"))) {
-                                //ignore uneeded spaces
-                            }
-                            else {
-                                if (carryType != Token.Type.EOS) {
-
-                                    output.AddLast(new Token(carry, carryType));
-                                    carry = "";
-                                    carryType = Token.Type.EOS;
-                                }
-                            }
-                        }
-                        
-                        break;
-                    
-                    case ' ':
-                        
-                        if (carryType != Token.Type.String) {
-                            if (carryType == Token.Type.FunctionCall && ((carry == "") || (carry == "<"))) {
-                                //ignore uneeded spaces
-                            }
-                            else {
-                                if (carryType != Token.Type.EOS) {
-
-                                    output.AddLast(new Token(carry, carryType));
-                                    carry = "";
-                                    carryType = Token.Type.EOS;
-                                }
-                            }
-                        }
-                        else
-                            carry += ' ';
-                        break;
-                    case '\"':
-                        if (carryType == Token.Type.String) {
-                            output.AddLast(new Token(carry, carryType));
-                            carryType = Token.Type.EOS;
-                        }
-                        else if (carryType == Token.Type.EOS) {
-                            carryType = Token.Type.String;
-                        }
-                        else
-                            throw new Exception("invalid operator placement");
-                        break;
-                    case '.':
-                        switch(carryType){
-                            case Token.Type.String:
-                                carry += '.';
-                                break;
-                            case Token.Type.Integer:
-                                carryType=Token.Type.Double;
-                                carry+='.';
-                                break;
-                            case Token.Type.IdHead:
-                                output.AddLast(new Token(carry, carryType));
-                                carryType=Token.Type.IdTail;
-                                carry="";
-                                break;
-                            case Token.Type.IdTail:
-                                output.AddLast(new Token(carry, carryType));
-                                carryType=Token.Type.IdTail;
-                                carry="";
-                                break;
-                            default:
-                                throw new Exception("invalid dot position");
-                        }
-                        break;
-                    case '0':
-                        if(carryType==Token.Type.EOS)
-                            carryType=Token.Type.Integer;
-                        carry+='0';
-                        break;
-                    case '1':
-                        if(carryType==Token.Type.EOS)
-                            carryType=Token.Type.Integer;
-                        carry+='1';
-                        break;
-                    case '2':
-                        if(carryType==Token.Type.EOS)
-                            carryType=Token.Type.Integer;
-                        carry+='2';
-                        break;
-                    case '3':
-                        if(carryType==Token.Type.EOS)
-                            carryType=Token.Type.Integer;
-                        carry+='3';
-                        break;
-                    case '4':
-                        if(carryType==Token.Type.EOS)
-                            carryType=Token.Type.Integer;
-                        carry+='4';
-                        break;
-                    case '5':
-                        if(carryType==Token.Type.EOS)
-                            carryType=Token.Type.Integer;
-                        carry+='5';
-                        break;
-                    case '6':
-                        if(carryType==Token.Type.EOS)
-                            carryType=Token.Type.Integer;
-                        carry+='6';
-                        break;
-                    case '7':
-                        if(carryType==Token.Type.EOS)
-                            carryType=Token.Type.Integer;
-                        carry+='7';
-                        break;
-                    case '8':
-                        if(carryType==Token.Type.EOS)
-                            carryType=Token.Type.Integer;
-                        carry+='8';
-                        break;
-                    case '9':
-                        if(carryType==Token.Type.EOS)
-                            carryType=Token.Type.Integer;
-                        carry+='9';
-                        break;
-                    
-                    
-                    case '<':
-                        if (carryType != Token.Type.EOS) {
-                            if (carryType == Token.Type.String)
-                                carry += "<";
-                            else
-                                throw new Exception("invalid placement");
-                        }
-                        else {
-                            carryType = Token.Type.FunctionCall;
-                            carry = "<";
-                        }
-                        break;
-                    case '-':
-                        if(carryType==Token.Type.EOS)
-                            output.AddLast(new Token("-", Token.Type.Operator));
-                        else if(carryType == Token.Type.FunctionCall){
-                            if(carry!="<")
-                                throw new Exception("invalid placement");
-                            carry="";
-                        }
-                        else
-                            throw new Exception("invalid placement");
-                        break;
-                    case '{':
-                         if (carryType == Token.Type.String)
-                            carry += '{';
-                        else if (carryType != Token.Type.EOS) {
-                            output.AddLast(new Token(carry, carryType));
-                            carry = "";
-                            carryType = Token.Type.EOS;
-                        }
-                        output.AddLast(new Token("{", Token.Type.Operator));
-                        break;
-                    case '}':
-                         if (carryType == Token.Type.String)
-                            carry += '}';
-                        else if (carryType != Token.Type.EOS) {
-                            output.AddLast(new Token(carry, carryType));
-                            carry = "";
-                            carryType = Token.Type.EOS;
-                        }
-                        output.AddLast(new Token("}", Token.Type.Operator));
-                        
-                        break;
-                    case '+':
-                        if(carryType==Token.Type.EOS)
-                            output.AddLast(new Token("+", Token.Type.Operator));
-                        else
-                            throw new Exception("invalid placement");
-                        break;
-                    case '*':
-                        if(carryType==Token.Type.EOS)
-                            output.AddLast(new Token("*", Token.Type.Operator));
-                        else
-                            throw new Exception("invalid placement");
-                        break;
-                    case ';':
-                        
-                        if (carryType == Token.Type.String)
-                            carry += ';';
-                        else if (carryType != Token.Type.EOS) {
-                            output.AddLast(new Token(carry, carryType));
-                            carry = "";
-                            carryType = Token.Type.EOS;
-                        }
-                        output.AddLast(new Token(";", Token.Type.Operator));
-                        break;
-                    
-
-                    default:
-                        if (carryType == Token.Type.EOS)
-                            carryType = Token.Type.IdHead;
-                        if (carryType == Token.Type.FunctionCall && carry == "<") {
-                            carry = "";
-                            
-                        }
-                        carry+=input[start];
-                        break;
-                }
-                start++;
-            }
-            if (carry != "") {
-                output.AddLast(new Token(carry, carryType));
-            }
-            output.AddLast(new Token("$", Token.Type.EOS));
-            return output;
-        }
+        //used to check if a word exists. need to improce in here.
         public static bool ReadFrom(string input, int index, string word) {
             try {
                 int j = 0;
