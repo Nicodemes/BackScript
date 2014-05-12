@@ -1,5 +1,8 @@
 ﻿//#define _DEBUG
-//#define _ELPASE
+#define _ELAPSE
+#if _ELAPSE
+using System.Diagnostics;
+#endif
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -116,6 +119,10 @@ namespace Interpreter {
             Execute(myString);
         }
         static void Execute(string data) {
+
+#if _ELAPSE
+            Stopwatch timer = Stopwatch.StartNew();
+#endif
             LinkedList<object> tokens = null;
             try {
                 try {tokens = Tt(data);}
@@ -127,6 +134,13 @@ namespace Interpreter {
                 Console.WriteLine("  " + e.Message);
                 environment.interpreter.Reset();
             }
+
+#if _ELAPSE  
+           timer.Stop();
+           TimeSpan timespan = timer.Elapsed;
+           Console.WriteLine(String.Format("{0:00}:{1:00}:{2:000}:{3:00}", timespan.Minutes, timespan.Seconds, timespan.Milliseconds, timespan.Ticks));
+#endif
+
         }
         //prints the help message
         static void Help() {
