@@ -22,12 +22,12 @@ namespace Interpreter {
                 StartInteactiveMode();
                 return;
             }
-            ExcecuteFile(args[0]);
+            
             //process arguments
             for (int i = 0; i < args.Length; i++)
                 Arguments(args[i]);
-            if(exefile){ 
-                
+            if(exefile){
+                ExcecuteFile(args[0]);
                 if (readline)
                 Console.ReadLine();
             }   
@@ -130,6 +130,7 @@ namespace Interpreter {
         //prints the help message
         static void Help() {
             LincesInfo();
+            Console.ReadLine();
         }
         //prints the linecs information.
         static void LincesInfo() {

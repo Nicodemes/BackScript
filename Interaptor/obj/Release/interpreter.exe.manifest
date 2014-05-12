@@ -50,17 +50,17 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>jaYr46Q8A/exKjCv2fGN9XJ73z0EN50tG4Yv4Nzlg0k=</dsig:DigestValue>
+        <dsig:DigestValue>V7bqD42f4g6fAjAVj4e9l/6RfGyEPBe1bR5wESZx5BI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="bin\Debug\Interaptor.exe" size="123392">
+  <file name="bin\Debug\Interaptor.exe" size="132608">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>4iCOm1CbMUBrKmGmpsshShV9JYKSwpNlYU78D/Fmc9g=</dsig:DigestValue>
+      <dsig:DigestValue>CsngYBhyOQ0f799M+azLNS+M1e+I8LjK4nx9UrVbz6U=</dsig:DigestValue>
     </hash>
   </file>
   <file name="icon.ico" size="99678">
