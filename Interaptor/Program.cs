@@ -1,11 +1,12 @@
 ﻿//#define _DEBUG
-#define _ELAPSE
+//#define _ELAPSE
 #if _ELAPSE
 using System.Diagnostics;
 #endif
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Interpreter.InteractiveColorMode;
 
 namespace Interpreter {
     class Program {
@@ -17,7 +18,10 @@ namespace Interpreter {
         static bool interactivemode = false;
         static bool debugmode = false;
         static bool icolorMode = false;//colored interactive mode
-
+        
+        //directoryy in which the script is located. will be referd as '/'
+        static string workingDir = "";
+        
         static void Main(string[] args) {
             environment = new Environment();
 
@@ -36,7 +40,7 @@ namespace Interpreter {
                 Console.ReadLine();
             }   
         }
-        
+
         //proccess all of the arguments that the program can take.
         static void Arguments(string arg) {
             switch (arg) {
@@ -104,9 +108,6 @@ namespace Interpreter {
                 Execute(input);
             }
         }
-        //highlites the lines as the users types.
-
-       
         public static LinkedList<object> Tt(string s) {
                 environment.lexicalAnaliser = new Tokenizer(s);
                 return environment.lexicalAnaliser.Tokenize();
@@ -165,9 +166,5 @@ namespace Interpreter {
             );
             Console.ForegroundColor = ConsoleColor.White;
         }
-
-
-
-
     }
 }

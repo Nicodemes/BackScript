@@ -6,12 +6,12 @@ using System.Text;
 using Interpreter.Reserved;
 namespace Interpreter {
     //registers all of the reserved functions and variables.
-    class Registry {
+    class KeywordRegistry {
         private SymbolTable root;
         public void Import(RDelegate dle, string name, params string[] parameters) {
             root.AddFunction(name, new SystemFunction(dle), parameters);
         }
-        public Registry(SymbolTable root) { 
+        public KeywordRegistry(SymbolTable root) { 
             //root is the root of the program symbol table tree
             this.root = root;
            
@@ -45,11 +45,13 @@ namespace Interpreter {
         private struct F {
             public RDelegate dle;
             public string name;
+            public string usage;
             public string[] parameters;
             public F(RDelegate dele,string name, params string[] parameters){
                 this.dle=dele;
                 this.name=name;
                 this.parameters=parameters;
+                this.usage="";
             }
         }
     }

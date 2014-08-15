@@ -11,35 +11,64 @@ namespace Interpreter.InteractiveColorMode {
         }
         static Style[] styles = new Style[]{
             new Style(ConsoleColor.White,ConsoleColor.Black),//default
-            new Style(ConsoleColor.Green,ConsoleColor.Black),//operators
-            new Style(ConsoleColor.DarkRed,ConsoleColor.Black)//string
+            new Style(ConsoleColor.Cyan,ConsoleColor.Black),//operators
+            new Style(ConsoleColor.Green,ConsoleColor.Black)//string
         };
 
 
         public static string ColoredReadLine() {
-            string input = "";
+
+            LinkedList<char> input = new LinkedList<char>();
+
             ConsoleKeyInfo ch = new ConsoleKeyInfo();
-            int count =1;
+            
+            int x = Console.CursorLeft,
+                y = Console.CursorTop;
 
             while (ch.Key != ConsoleKey.Enter) {
                 ch = Console.ReadKey();
+                
                 if (ch.Key != ConsoleKey.Enter) {
-                    input += ch.KeyChar;
-                    DrawTokens(Program.Tt(input), count);
+                    if (ch.Key == ConsoleKey.Backspace) {
+                        if (input.Count != 0) {
+                            Console.Write("\b");
+                            input.RemoveLast();
+                        }
+                    }
+                    else 
+                        input.AddLast(ch.KeyChar);
+
+                    DrawTokens(Program.Tt(toString(input)), x, y);
                 }
-                count++;
+                
+                
             }
-            return input;
+            Console.Write("\n");
+            return toString(input);
         }
-        static void DrawTokens(LinkedList<object> t, int count){
-            for (int i = 0; i < count; i++)
-                Console.Write("\b");
+        static string toString(LinkedList<char> l) {
+            string toReturn = "";
+            foreach (char item in l) {
+                toReturn += item;
+            }
+            return toReturn;
+        }
+        static void DrawTokens(LinkedList<object> t, int x, int y){
+            
+            int a = Console.CursorLeft,
+                b = Console.CursorTop;
+
+            Console.SetCursorPosition(x, y);
+            for (int i = 0; i < CalcLength(x, y, a, b); i++)
+                Console.Write(" ");
+            Console.SetCursorPosition(x, y);
+
             foreach (object token in t) {
                 if (token is Token) {
-                    Console.Write(" ");
+                    //Console.Write(" ");
                     switch((token as Token).type){
                         case Token.Type.IdSingle:
-                            WriteWithStyle((token as Token).lexema, styles[1]); break;
+                            WriteWithStyle((token as Token).lexema, styles[0]); break;
                         case Token.Type.Operator:
                             WriteWithStyle( (token as Token).lexema,styles[1]);break;
                         case Token.Type.String:
@@ -53,6 +82,10 @@ namespace Interpreter.InteractiveColorMode {
                 //TODO:this
                 }
             }
+        }
+        static int CalcLength(int x, int y, int a, int b) {
+            int LineWidth = Console.WindowWidth;
+            return ((b - y) * LineWidth)+(a-x);
         }
     }
 }

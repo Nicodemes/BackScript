@@ -8,3 +8,6 @@ E:\cs\proj\Interaptor\Interaptor\obj\Release\interpreter.exe.manifest
 E:\cs\proj\Interaptor\Interaptor\obj\Release\interpreter.application
 E:\cs\proj\Interaptor\Interaptor\obj\Release\interpreter.exe
 E:\cs\proj\Interaptor\Interaptor\obj\Release\interpreter.pdb
+E:\cs\proj\BackScript\Interaptor\bin\Release\interpreter.exe.config
+E:\cs\proj\BackScript\Interaptor\obj\Release\interpreter.exe
+E:\cs\proj\BackScript\Interaptor\obj\Release\interpreter.pdb

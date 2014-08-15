@@ -1,0 +1,10 @@
+E:\cs\proj\BackScript\Interaptor\bin\Release\interpreter.exe.config
+E:\cs\proj\BackScript\Interaptor\obj\Release\interpreter.exe
+E:\cs\proj\BackScript\Interaptor\obj\Release\interpreter.pdb
+E:\cs\proj\BackScript\Interaptor\obj\Release\BackScript.csprojResolveAssemblyReference.cache
+E:\cs\proj\BackScript\Interaptor\bin\Release\interpreter.exe.manifest
+E:\cs\proj\BackScript\Interaptor\bin\Release\interpreter.application
+E:\cs\proj\BackScript\Interaptor\bin\Release\interpreter.exe
+E:\cs\proj\BackScript\Interaptor\bin\Release\interpreter.pdb
+E:\cs\proj\BackScript\Interaptor\obj\Release\interpreter.exe.manifest
+E:\cs\proj\BackScript\Interaptor\obj\Release\interpreter.application

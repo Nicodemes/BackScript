@@ -248,33 +248,38 @@ namespace Interpreter {
                        
                         BreakCarry(Token.Type.String);
                         Next();
-                        while (input[start] != '\"') {
-                            
-                            //if it is an escape charecter.
-                            if (input[start] == '\\') {
-                                //TODO: escape charecter extantion for hex dec and other stuff.
-                                switch (LookAhead()) {
-                                    case 'n':
-                                        carry += '\n';
-                                        break;
-                                    case 't':
-                                        carry += '\t';
-                                        break;
-                                    case '\"':
-                                        carry += '\"';
-                                        break;
-                                    case '\'':
-                                        carry += '\'';
-                                        break;
-                                    default:
-                                        throw new Exception("unrecognized charecter after escape charecter");
+                        try {
+                            while (input[start] != '\"') {
+
+                                //if it is an escape charecter.
+                                if (input[start] == '\\') {
+                                    //TODO: escape charecter extantion for hex dec and other stuff.
+                                    switch (LookAhead()) {
+                                        case 'n':
+                                            carry += '\n';
+                                            break;
+                                        case 't':
+                                            carry += '\t';
+                                            break;
+                                        case '\"':
+                                            carry += '\"';
+                                            break;
+                                        case '\'':
+                                            carry += '\'';
+                                            break;
+                                        default:
+                                            throw new Exception("invalid charecter after escape charecter.");
+                                    }
+                                    Next();
+                                }
+                                else {
+                                    carry += input[start];
                                 }
                                 Next();
                             }
-                            else {
-                                carry += input[start];
-                            }
-                            Next();
+                        }
+                        catch (IndexOutOfRangeException e) {
+                            
                         }
                         BreakCarry();
                         break;

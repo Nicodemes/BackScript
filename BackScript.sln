@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interaptor", "Interaptor\Interaptor.csproj", "{6789F0E4-E010-491B-B645-95A3F033C64D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackScript", "Interaptor\BackScript.csproj", "{6789F0E4-E010-491B-B645-95A3F033C64D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
