@@ -17,7 +17,7 @@ namespace Interpreter {
         static bool readline = false;
         static bool interactivemode = false;
         static bool debugmode = false;
-        static bool icolorMode = false;//colored interactive mode
+        static bool icolorMode = true;//colored interactive mode
         
         //directoryy in which the script is located. will be referd as '/'
         static string workingDir = "";
@@ -62,10 +62,12 @@ namespace Interpreter {
                 //set the ineractive color mode on
                 case "-c":
                     icolorMode = true;
+                    StartInteactiveMode();
                     break;
                 //set the ineractive color mode on
                 case "--color":
                     icolorMode = true;
+                    StartInteactiveMode();
                     break;
 
                 //don't close window after execution.

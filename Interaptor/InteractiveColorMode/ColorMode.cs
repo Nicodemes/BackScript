@@ -31,7 +31,6 @@ namespace Interpreter.InteractiveColorMode {
                 if (ch.Key != ConsoleKey.Enter) {
                     if (ch.Key == ConsoleKey.Backspace) {
                         if (input.Count != 0) {
-                            Console.Write("\b");
                             input.RemoveLast();
                         }
                     }
